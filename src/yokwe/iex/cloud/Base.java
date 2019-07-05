@@ -474,7 +474,9 @@ public class Base {
 		String url = context.getURL(classInfo.method);
 //		logger.info("url = {}", url);
 		
-		String jsonString = HttpUtil.downloadAsString(url);
+		HttpUtil.Result result = HttpUtil.download(url);
+		logger.info("tokenUsed {}", result.tokenUsed);
+		String jsonString = result.result;
 		if (jsonString == null) {
 			logger.error("jsonString == null");
 			throw new UnexpectedException("jsonString == null");
@@ -505,7 +507,9 @@ public class Base {
 		String url = context.getURL(classInfo.method);
 //		logger.info("url = {}", url);
 		
-		String jsonString = HttpUtil.downloadAsString(url);
+		HttpUtil.Result result = HttpUtil.download(url);
+		logger.info("tokenUsed {}", result.tokenUsed);
+		String jsonString = result.result;
 		if (jsonString == null) {
 			logger.error("jsonString == null");
 			throw new UnexpectedException("jsonString == null");
@@ -549,14 +553,16 @@ public class Base {
 		String url = context.getURLAsCSV(classInfo.method);
 //		logger.info("url = {}", url);
 		
-		String csvString = HttpUtil.downloadAsString(url);
+		HttpUtil.Result result = HttpUtil.download(url);
+		logger.info("tokenUsed {}", result.tokenUsed);
+		String csvString = result.result;
 		if (csvString == null) {
 			logger.error("csvString == null");
 			throw new UnexpectedException("csvString == null");
 		}
 		Reader reader = new StringReader(csvString);
 
-		List<E> list = CSVUtil.loadWithHeader(reader, clazz, IEXCloud.NEW_YORK);
+		List<E> list = CSVUtil.loadWithHeader(reader, clazz);
 		
 		@SuppressWarnings("unchecked")
 		E[] ret = (E[])Array.newInstance(clazz, list.size());

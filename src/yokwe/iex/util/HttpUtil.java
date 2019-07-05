@@ -1,12 +1,10 @@
 package yokwe.iex.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
@@ -31,6 +29,8 @@ public class HttpUtil {
 	private static final String DEFAULT_ENCODING = "UTF-8";
 
 	private static final int CONNECTION_POOLING_MAX_TOTAL = 5;
+	
+	private static final String HEADER_IEXCLOUD_MESSAGES_USED = "iexcloud-messages-used";
 
 	private static CloseableHttpClient httpClient;
 	static {
@@ -44,21 +44,26 @@ public class HttpUtil {
 		
 		httpClient = httpClientBuilder.build();
 	}
+	
+	public static class Result {
+		public final String url;
+		public final String result;
+		public final int    tokenUsed;
+		
+		private Result (String url, String result, int tokenUsed) {
+			this.url       = url;
+			this.result    = result;
+			this.tokenUsed = tokenUsed;
+		}
+	}
 
-	public static String downloadAsString(String url) {
-		return downloadAsString(url, DEFAULT_ENCODING, null);
+	public static Result download(String url) {
+		return download(url, DEFAULT_ENCODING);
 	}
 	
-	public static String downloadAsString(String url, String encoding) {
-		return downloadAsString(url, encoding, null);
-	}
-	
-	public static String downloadAsString(String url, String encoding, String cookie) {
+	public static Result download(String url, String encoding) {
 		HttpGet httpGet = new HttpGet(url);
 		httpGet.setHeader("User-Agent", USER_AGENT);
-		if (cookie != null) {
-			httpGet.setHeader("Cookie", cookie);
-		}
 
 		int retryCount = 0;
 		for(;;) {
@@ -84,7 +89,31 @@ public class HttpUtil {
 					return null;
 				}
 				if (code == HttpStatus.SC_OK) {
-					return getContent(response.getEntity(), encoding);
+					int tokenUsed;
+					
+					{
+						Header tokenUsedHeader = response.getFirstHeader(HEADER_IEXCLOUD_MESSAGES_USED);
+						if (tokenUsedHeader != null) {
+							try {
+								tokenUsed = Integer.valueOf(tokenUsedHeader.getValue());
+							} catch (NumberFormatException e) {
+								logger.error("NumberFormatException  {}", tokenUsedHeader.getValue());
+								throw new UnexpectedException("NumberFormatException", e);
+							}
+						} else {
+							logger.warn("no iexcloud-messages-used  {}", url);
+							tokenUsed = 0;
+//							logger.error("Unexpected header  {}", url);
+//							for(Header header: response.getAllHeaders()) {
+//								logger.error("header  {}  {}", header.getName(), header.getValue());
+//							}
+//							throw new UnexpectedException("Unexpected header");
+						}
+					}
+					
+					String result = getContent(response.getEntity(), encoding);
+					
+					return new Result(url, result, tokenUsed);
 				}
 				
 				// Other code
@@ -138,66 +167,4 @@ public class HttpUtil {
 			throw new UnexpectedException("IOException");
 		}
  	}
-	
-	public static void download(String url, String path) {
-		download(url, path, DEFAULT_ENCODING);
-	}
-	public static void download(String url, String path, String encoding) {
-		String content = downloadAsString(url, encoding);
-		
-		if (content != null) {
-			File file = new File(path);
-			
-			File fileParent = file.getParentFile();
-			if (!fileParent.exists()) fileParent.mkdirs();
-			
-			FileUtil.write(file, content);
-		}
-	}
-	
-	public static byte[] downloadAsByteArray(String url) {
-		HttpGet httpGet = new HttpGet(url);
-		httpGet.setHeader("User-Agent", USER_AGENT);
-		try (CloseableHttpClient httpClient = HttpClients.createDefault();
-			CloseableHttpResponse response = httpClient.execute(httpGet)) {
-			final int code = response.getStatusLine().getStatusCode();
-			final String reasonPhrase = response.getStatusLine().getReasonPhrase();
-			
-			if (code == HttpStatus.SC_NOT_FOUND) { // 404
-				logger.warn("{} {}  {}", code, reasonPhrase, url);
-				return null;
-			}
-			if (code == HttpStatus.SC_BAD_REQUEST) { // 400
-				logger.warn("{} {}  {}", code, reasonPhrase, url);
-				return null;
-			}
-			if (code != HttpStatus.SC_OK) { // 200
-				logger.error("statusLine = {}", response.getStatusLine().toString());
-				logger.error("url {}", url);
-				logger.error("code {}", code);
-				throw new UnexpectedException("download");
-			}
-			
-		    HttpEntity entity = response.getEntity();
-		    if (entity != null) {
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		    	byte[] buf = new byte[1024 * 64];
-		    	try (InputStream is = entity.getContent()) {
-		    		for(;;) {
-		    			int len = is.read(buf);
-		    			if (len == -1) break;
-		    			baos.write(buf, 0, len);
-		    		}
-		    	}
-		    	return baos.toByteArray();
-		    } else {
-				logger.error("entity is null");
-				throw new UnexpectedException("entity is null");
-		    }
-		} catch (UnsupportedOperationException | IOException e) {
-			String exceptionName = e.getClass().getSimpleName();
-			logger.error("{} {}", exceptionName, e);
-			throw new UnexpectedException(exceptionName, e);
-		}
-	}
 }

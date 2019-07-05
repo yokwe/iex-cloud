@@ -16,7 +16,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +53,6 @@ public class CSVUtil {
 	}
 
 	public static <E> List<E> loadWithHeader(Reader reader, Class<E> clazz) {
-		return loadWithHeader(reader, clazz, ZoneId.systemDefault());
-	}
-	public static <E> List<E> loadWithHeader(Reader reader, Class<E> clazz, ZoneId zoneID) {
 		String[] names;
 		{
 			List<String> nameList = new ArrayList<>();
@@ -70,7 +67,7 @@ public class CSVUtil {
 		}
 		
 		CSVFormat csvFormat = CSVFormat.DEFAULT.withHeader(names).withRecordSeparator("\n");
-		return load(reader, clazz, csvFormat, zoneID);
+		return load(reader, clazz, csvFormat);
 	}
 	public static <E> List<E> loadWithHeader(String path, Class<E> clazz) {
 		{
@@ -110,10 +107,6 @@ public class CSVUtil {
 	private static final String UTF8_BOM = "\uFEFF";
 
 	public static <E> List<E> load(Reader reader, Class<E> clazz, CSVFormat csvFormat) {
-		return load(reader, clazz, csvFormat, ZoneId.systemDefault());
-	}
-	
-	public static <E> List<E> load(Reader reader, Class<E> clazz, CSVFormat csvFormat, ZoneId zoneID) {
 		Field[]  fields;
 		String[] types;
 		int      size;
@@ -211,7 +204,7 @@ public class CSVUtil {
 						} else if (value.matches("^[0-9]+$")) {
 							long longValue = Long.parseLong(value);
 							// Need time zone to calculate correct date time
-							localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(longValue), zoneID);
+							localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(longValue), ZoneOffset.UTC);
 						} else {
 							localDateTime = LocalDateTime.parse(value);
 						}

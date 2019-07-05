@@ -9,7 +9,8 @@ import yokwe.iex.cloud.IEXCloud.TimeZone;
 import yokwe.iex.cloud.IEXCloud.UseTimeZone;
 
 public class Status extends Base {
-	public static final String METHOD = "/status";
+	public static final int    DATA_WEIGHT = 0; // FREE
+	public static final String METHOD      = "/status";
 	
 	public String 		 status;
 	public String 		 version;
