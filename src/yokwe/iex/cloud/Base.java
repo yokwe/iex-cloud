@@ -7,8 +7,9 @@ import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,7 +36,7 @@ import yokwe.iex.util.Util;
 public class Base {
 	static final Logger logger = LoggerFactory.getLogger(Base.class);
 	
-	public static final OffsetDateTime NULL_LOCAL_DATE_TIME = OffsetDateTime.of(1900, 1, 1, 0, 0, 0, 0, Util.ZONE_OFFSET);
+	public static final LocalDateTime NULL_LOCAL_DATE_TIME = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
 
 	public static final String PATH_DIR = "tmp/iex";
 
@@ -83,13 +84,29 @@ public class Base {
 						// Quote special character in string \ => \\  " => \"
 						String stringValue = value.toString().replace("\\", "\\\\").replace("\"", "\\\"");
 						line.append("\"").append(stringValue).append("\"");
-					} else if (value instanceof OffsetDateTime) {
-						OffsetDateTime offsetDateTime = (OffsetDateTime)value;
+					} else if (value instanceof LocalDateTime) {
+						LocalDateTime  localDateTime  = (LocalDateTime)value;
+						OffsetDateTime offsetDateTime = localDateTime.atOffset(ZoneOffset.UTC);
+						
 						String stringValue;
-						if (fieldInfo.useLocalTimeZone) {
-							stringValue = offsetDateTime.atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime().toString();
+						if (fieldInfo.useTimeZone != null) {
+							switch(fieldInfo.useTimeZone) {
+							case UTC:
+								stringValue = offsetDateTime.atZoneSameInstant(IEXCloud.UTC).toLocalDateTime().toString();
+								break;
+							case LOCAL:
+								stringValue = offsetDateTime.atZoneSameInstant(IEXCloud.LOCAL).toLocalDateTime().toString();
+								break;
+							case NEW_YORK:
+								stringValue = offsetDateTime.atZoneSameInstant(IEXCloud.NEW_YORK).toLocalDateTime().toString();
+								break;
+							default:
+								logger.error("Unexptected useTimeZone value {}", fieldInfo.useTimeZone);
+								throw new UnexpectedException("Unexptected useTimeZone value");
+							}
 						} else {
-							stringValue = offsetDateTime.toLocalDateTime().toString();
+							logger.error("No useTimeZone annotation  {}.{}", classInfo.clazzName, fieldInfo.name);
+							throw new UnexpectedException("No useTimeZone annotation");
 						}
 						line.append(stringValue);
 					} else if (fieldInfo.isArray) {
@@ -156,8 +173,8 @@ public class Base {
 						// To handle irregular case in Symbols, add this code. Value of iexId in Symbols can be number or String.
 						fieldInfo.field.set(this, jsonNumber.toString());
 						break;
-					case "java.time.OffsetDateTime":
-						fieldInfo.field.set(this, Util.getOffsetDateTimeFromMilli(jsonNumber.longValue()));
+					case "java.time.LocalDateTime":
+						fieldInfo.field.set(this, Util.getLocalDateTimeFromMilli(jsonNumber.longValue()));
 						break;
 					default:
 						logger.error("Unexptected type {} {}", valueType.toString(), fieldInfo.toString());
@@ -220,7 +237,7 @@ public class Base {
 					case "long":
 						fieldInfo.field.set(this, 0);
 						break;
-					case "java.time.OffsetDateTime":
+					case "java.time.LocalDateTime":
 						fieldInfo.field.set(this, NULL_LOCAL_DATE_TIME);
 						break;
 					case "java.lang.String":
@@ -412,7 +429,7 @@ public class Base {
 						}
 						fieldInfo.field.set(this, "");
 						break;
-					case "java.time.OffsetDateTime":
+					case "java.time.LocalDateTime":
 						if (!fieldInfo.ignoreField) {
 							logger.warn("Assign defautl value  {} {} {}", iexInfo.clazzName, fieldInfo.name, fieldInfo.type);
 						}
@@ -539,7 +556,7 @@ public class Base {
 		}
 		Reader reader = new StringReader(csvString);
 
-		List<E> list = CSVUtil.loadWithHeader(reader, clazz, Util.ZONE_ID);
+		List<E> list = CSVUtil.loadWithHeader(reader, clazz, IEXCloud.NEW_YORK);
 		
 		@SuppressWarnings("unchecked")
 		E[] ret = (E[])Array.newInstance(clazz, list.size());

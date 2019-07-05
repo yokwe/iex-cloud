@@ -1,12 +1,13 @@
 package yokwe.iex.cloud.data;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import javax.json.JsonObject;
 
 import yokwe.iex.cloud.Base;
-import yokwe.iex.cloud.IEXCloud.UseLocalTimeZone;
+import yokwe.iex.cloud.IEXCloud.TimeZone;
+import yokwe.iex.cloud.IEXCloud.UseTimeZone;
 
 public class Account {
 	public static class Metadata extends Base {
@@ -14,8 +15,8 @@ public class Account {
 
 		// {"payAsYouGoEnabled":false,"effectiveDate":1551225868000,"subscriptionTermType":"annual","tierName":"start","messageLimit":500000,"messagesUsed":0,"circuitBreaker":null}
 		public boolean        payAsYouGoEnabled;
-		@UseLocalTimeZone
-		public OffsetDateTime effectiveDate;
+		@UseTimeZone(TimeZone.LOCAL)
+		public LocalDateTime  effectiveDate;
 		public String         subscriptionTermType;
 		public String         tierName;
 		public long           messageLimit;

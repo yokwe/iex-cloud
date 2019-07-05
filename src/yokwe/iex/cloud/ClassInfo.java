@@ -14,7 +14,8 @@ import org.slf4j.LoggerFactory;
 import yokwe.iex.UnexpectedException;
 import yokwe.iex.cloud.IEXCloud.IgnoreField;
 import yokwe.iex.cloud.IEXCloud.JSONName;
-import yokwe.iex.cloud.IEXCloud.UseLocalTimeZone;
+import yokwe.iex.cloud.IEXCloud.TimeZone;
+import yokwe.iex.cloud.IEXCloud.UseTimeZone;
 
 
 public class ClassInfo {
@@ -23,13 +24,13 @@ public class ClassInfo {
 	private static Map<String, ClassInfo> map = new TreeMap<>();
 	
 	public static class FieldInfo {
-		public final Field   field;
-		public final String  name;
-		public final String  jsonName;
-		public final String  type;
-		public final boolean isArray;
-		public final boolean ignoreField;
-		public final boolean useLocalTimeZone;
+		public final Field    field;
+		public final String   name;
+		public final String   jsonName;
+		public final String   type;
+		public final boolean  isArray;
+		public final boolean  ignoreField;
+		public final TimeZone useTimeZone;
 		
 		FieldInfo(Field field) {
 			this.field = field;
@@ -44,8 +45,14 @@ public class ClassInfo {
 			this.type     = type.getName();
 			this.isArray  = type.isArray();
 			
-			this.ignoreField      = field.getDeclaredAnnotation(IgnoreField.class) != null;
-			this.useLocalTimeZone = field.getDeclaredAnnotation(UseLocalTimeZone.class) != null;
+			this.ignoreField = field.getDeclaredAnnotation(IgnoreField.class) != null;
+			
+			UseTimeZone useTimeZone = field.getDeclaredAnnotation(UseTimeZone.class);
+			if (useTimeZone != null) {
+				this.useTimeZone = useTimeZone.value();
+			} else {
+				this.useTimeZone = null;
+			}
 		}
 		
 		@Override
