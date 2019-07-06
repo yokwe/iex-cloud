@@ -10,6 +10,33 @@ public class Usage extends Base {
 	public static final int    DATA_WEIGHT = 0; // FREE
 	public static final String METHOD      = "/account/usage";
 	
+//	{
+//	    "messages": {
+//	        "dailyUsage": {
+//	            "20190704": "504",
+//	            "20190705": "302",
+//	            "20190706": "0"
+//	        },
+//	        "monthlyUsage": 806,
+//	        "monthlyPayAsYouGo": 0,
+//	        "tokenUsage": {
+//	            
+//	        },
+//	        "keyUsage": {
+//	            "ACCOUNT_USAGE": "0",
+//	            "REF_DATA_IEX_SYMBOLS": "0",
+//	            "REF_DATA": "300",
+//	            "REF_DATA_OTC": "300",
+//	            "REF_DATA_EXCHANGES": "6",
+//	            "REF_DATA_MUTUAL_FUNDS": "200",
+//	            "IEX_DEEP": "0",
+//	            "IEX_TOPS": "0",
+//	            "IEX_STATS": "0"
+//	        }
+//	    },
+//	    "rules": []
+//	}
+	
 	public static class Messages extends Base {
 		public Map<String, Long> dailyUsage;
 		public long              monthlyUsage;
@@ -29,7 +56,6 @@ public class Usage extends Base {
 		}
 	}
 	
-	// {"messages":{"dailyUsage":{"20190616":"0","20190617":"0"},"monthlyUsage":0,"monthlyPayAsYouGo":0,"tokenUsage":{},"keyUsage":{"ACCOUNT_USAGE":"0","IEX_STATS":"0","REF_DATA_IEX_SYMBOLS":"0","IEX_TOPS":"0","IEX_DEEP":"0"}},"rules":[]}
 	public Usage.Messages messages;
 //		public Rules    rules;
 	
