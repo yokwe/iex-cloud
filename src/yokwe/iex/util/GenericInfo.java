@@ -4,12 +4,16 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import org.slf4j.LoggerFactory;
+
 import yokwe.iex.UnexpectedException;
 
 //
 // Generic
 //
 public class GenericInfo {
+	static final org.slf4j.Logger logger = LoggerFactory.getLogger(GenericInfo.class);
+
 	public final Class<?>   rawClass;
 	public final Class<?>[] classArguments;
 	
@@ -23,7 +27,7 @@ public class GenericInfo {
 			if (rawType instanceof Class) {
 				rawClass = (Class<?>)rawType;
 			} else {
-				Util.logger.error("Unexpected rawType  {}", rawType.getClass().getName());
+				logger.error("Unexpected rawType  {}", rawType.getClass().getName());
 				throw new UnexpectedException("Unexpected rawType");
 			}
 
@@ -33,12 +37,12 @@ public class GenericInfo {
 				if (typeArgument instanceof Class) {
 					classArguments[i] = (Class<?>)typeArgument;
 				} else {
-					Util.logger.error("Unexpected typeArgument  {}", typeArgument.getClass().getName());
+					logger.error("Unexpected typeArgument  {}", typeArgument.getClass().getName());
 					throw new UnexpectedException("Unexpected typeArgument");
 				}
 			}
 		} else {
-			Util.logger.error("Unexpected fieldGenericType  {}", genericType.getClass().getName());
+			logger.error("Unexpected fieldGenericType  {}", genericType.getClass().getName());
 			throw new UnexpectedException("Unexpected genericType");
 		}
 	}
