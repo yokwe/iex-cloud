@@ -4,7 +4,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -28,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import yokwe.iex.UnexpectedException;
 import yokwe.iex.util.CSVUtil;
+import yokwe.iex.util.GenericInfo;
 import yokwe.iex.util.HttpUtil;
 import yokwe.iex.util.Util;
 
@@ -164,6 +164,9 @@ public class Base {
 					case "long":
 						fieldInfo.field.set(this, jsonNumber.longValue());
 						break;
+					case "int":
+						fieldInfo.field.set(this, jsonNumber.intValue());
+						break;
 					case "java.math.BigDecimal":
 						fieldInfo.field.set(this, jsonNumber.bigDecimalValue());
 						break;
@@ -235,6 +238,9 @@ public class Base {
 					case "long":
 						fieldInfo.field.set(this, 0);
 						break;
+					case "int":
+						fieldInfo.field.set(this, 0);
+						break;
 					case "java.time.LocalDateTime":
 						fieldInfo.field.set(this, NULL_LOCAL_DATE_TIME);
 						break;
@@ -264,98 +270,117 @@ public class Base {
 						switch(fieldTypeName) {
 						case "java.util.Map":
 						{
-							java.lang.reflect.Type type = fieldInfo.field.getGenericType();
-							if (type instanceof ParameterizedType) {
-								ParameterizedType parameterizedType = (ParameterizedType)type;
-								
-								java.lang.reflect.Type[] types = parameterizedType.getActualTypeArguments();
-								if (types.length != 2) {
-									logger.error("Unexptected types.length {}", types.length);
-									throw new UnexpectedException("Unexpected types.length");
-								}
-
-								String keyTypeName   = types[0].getTypeName();
-								String valueTypeName = types[1].getTypeName();
-								
-//								logger.info("keyTypeName   {}", keyTypeName);
-//								logger.info("valueTypeName {}", valueTypeName);
-								
-								if (!keyTypeName.equals("java.lang.String")) {
-									logger.error("Unexptected keyTypeName {}", keyTypeName);
-									throw new UnexpectedException("Unexptected keyTypeName");
-								}
-								
-								switch(valueTypeName) {
-								case "java.lang.Long":
-								{
-									Map<String, Long> child = new TreeMap<>();
-									JsonObject childJson = jsonObject.get(fieldInfo.jsonName).asJsonObject();
-									for(String childKey: childJson.keySet()) {
-										JsonValue childValue = childJson.get(childKey);
-										ValueType childValueType = childValue.getValueType();
-										
-										switch(childValueType) {
-										case NUMBER:
-										{
-											JsonNumber jsonNumber = childJson.getJsonNumber(childKey);
-											long value = jsonNumber.longValue();
-											child.put(childKey, value);
-										}
-											break;
-										case STRING:
-										{
-											JsonString jsonString = childJson.getJsonString(childKey);
-											long value = Long.valueOf((jsonString.getString().length() == 0) ? "0" : jsonString.getString());
-											child.put(childKey, value);
-										}
-											break;
-										default:
-											logger.error("Unexptected childValueType {}", childValueType);
-											throw new UnexpectedException("Unexptected childValueType");
-										}
-									}
-									fieldInfo.field.set(this, child);
-								}
-									break;
-								case "java.lang.Integer":
-								{
-									Map<String, Integer> child = new TreeMap<>();
-									JsonObject childJson = jsonObject.get(fieldInfo.jsonName).asJsonObject();
-									for(String childKey: childJson.keySet()) {
-										JsonValue childValue = childJson.get(childKey);
-										ValueType childValueType = childValue.getValueType();
-										
-										switch(childValueType) {
-										case NUMBER:
-										{
-											JsonNumber jsonNumber = childJson.getJsonNumber(childKey);
-											int value = jsonNumber.intValue();
-											child.put(childKey, value);
-										}
-											break;
-										case STRING:
-										{
-											JsonString jsonString = childJson.getJsonString(childKey);
-											int value = Integer.valueOf((jsonString.getString().length() == 0) ? "0" : jsonString.getString());
-											child.put(childKey, value);
-										}
-											break;
-										default:
-											logger.error("Unexptected childValueType {}", childValueType);
-											throw new UnexpectedException("Unexptected childValueType");
-										}
-									}
-									fieldInfo.field.set(this, child);
-								}
-									break;
-								default:
-									logger.error("Unexptected keyTypeName {}", keyTypeName);
-									throw new UnexpectedException("Unexptected keyTypeName");
-								}
-							} else {
-								throw new UnexpectedException("Unexptected");
+							GenericInfo genericInfo = new GenericInfo(fieldInfo.field);
+							if (genericInfo.classArguments.length != 2) {
+								logger.error("Unexptected genericInfo.classArguments.length {}", genericInfo.classArguments.length);
+								throw new UnexpectedException("Unexptected genericInfo.classArguments.length");
+							}
+							Class<?> mapKeyClass   = genericInfo.classArguments[0];
+							Class<?> mapValueClass = genericInfo.classArguments[1];
+														
+							String mapKeyClassName   = mapKeyClass.getTypeName();
+							String mapValueClassName = mapValueClass.getTypeName();
+							
+//							logger.info("mapKeyClassName   {}", mapKeyClassName);
+//							logger.info("mapValueClassName {}", mapValueClassName);
+							
+							if (!mapKeyClassName.equals("java.lang.String")) {
+								logger.error("Unexptected keyTypeName {}", mapKeyClassName);
+								throw new UnexpectedException("Unexptected keyTypeName");
 							}
 							
+							switch(mapValueClassName) {
+							case "java.lang.Long":
+							{
+								Map<String, Long> child = new TreeMap<>();
+								JsonObject childJson = jsonObject.get(fieldInfo.jsonName).asJsonObject();
+								for(String childKey: childJson.keySet()) {
+									JsonValue childValue = childJson.get(childKey);
+									ValueType childValueType = childValue.getValueType();
+									
+									switch(childValueType) {
+									case NUMBER:
+									{
+										JsonNumber jsonNumber = childJson.getJsonNumber(childKey);
+										long value = jsonNumber.longValue();
+										child.put(childKey, value);
+									}
+										break;
+									case STRING:
+									{
+										JsonString jsonString = childJson.getJsonString(childKey);
+										long value = Long.valueOf((jsonString.getString().length() == 0) ? "0" : jsonString.getString());
+										child.put(childKey, value);
+									}
+										break;
+									default:
+										logger.error("Unexptected childValueType {}", childValueType);
+										throw new UnexpectedException("Unexptected childValueType");
+									}
+								}
+								fieldInfo.field.set(this, child);
+							}
+								break;
+							case "java.lang.Integer":
+							{
+								Map<String, Integer> child = new TreeMap<>();
+								JsonObject childJson = jsonObject.get(fieldInfo.jsonName).asJsonObject();
+								for(String childKey: childJson.keySet()) {
+									JsonValue childValue = childJson.get(childKey);
+									ValueType childValueType = childValue.getValueType();
+									
+									switch(childValueType) {
+									case NUMBER:
+									{
+										JsonNumber jsonNumber = childJson.getJsonNumber(childKey);
+										int value = jsonNumber.intValue();
+										child.put(childKey, value);
+									}
+										break;
+									case STRING:
+									{
+										JsonString jsonString = childJson.getJsonString(childKey);
+										int value = Integer.valueOf((jsonString.getString().length() == 0) ? "0" : jsonString.getString());
+										child.put(childKey, value);
+									}
+										break;
+									default:
+										logger.error("Unexptected childValueType {}", childValueType);
+										throw new UnexpectedException("Unexptected childValueType");
+									}
+								}
+								fieldInfo.field.set(this, child);
+							}
+								break;
+							default:
+								// If value extends from Base
+								if (Base.class.isAssignableFrom(mapValueClass)) {
+									Map<String, Base> child = new TreeMap<>();
+									JsonObject childJson = jsonObject.get(fieldInfo.jsonName).asJsonObject();
+									for(String childKey: childJson.keySet()) {
+										JsonValue childValue = childJson.get(childKey);
+										ValueType childValueType = childValue.getValueType();
+										
+										switch(childValueType) {
+										case OBJECT:
+										{
+											JsonObject jsonObjectValue = childJson.getJsonObject(childKey);
+											Base value = (Base)mapValueClass.getDeclaredConstructor(JsonObject.class).newInstance(jsonObjectValue);
+
+											child.put(childKey, value);
+										}
+											break;
+										default:
+											logger.error("Unexptected childValueType {}", childValueType);
+											throw new UnexpectedException("Unexptected childValueType");
+										}
+									}
+									fieldInfo.field.set(this, child);
+								} else {
+									logger.error("Unexptected keyTypeName {}", mapKeyClassName);
+									throw new UnexpectedException("Unexptected keyTypeName");
+								}
+							}
 						}
 							break;
 						default:
@@ -611,7 +636,7 @@ public class Base {
 
 		CSVUtil.saveWithHeader(dataList, path);
 	}
-	protected static <E extends Base> List<E> loadCSV(Class<E> clazz) {
+	public static <E extends Base> List<E> loadCSV(Class<E> clazz) {
 		ClassInfo classInfo = ClassInfo.get(clazz);
 		
 		if (classInfo.path == null) {
