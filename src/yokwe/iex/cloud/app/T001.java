@@ -114,6 +114,15 @@ public class T001 {
 			}
 		}
 		
+		{
+			List<yokwe.iex.cloud.data.timeSeries.Key> keyList = yokwe.iex.cloud.data.timeSeries.Key.getKeyList(context);
+			logger.info("keyList = {}", keyList.size());
+			for(int i = 0; i < keyList.size(); i++) {
+				yokwe.iex.cloud.data.timeSeries.Key key = keyList.get(i); 
+				logger.info("{}", key);
+			}
+		}
+		
 		logger.info("STOP");
 	}
 }
