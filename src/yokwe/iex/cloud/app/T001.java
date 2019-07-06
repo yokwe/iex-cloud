@@ -104,6 +104,16 @@ public class T001 {
 //			Tops.Last.saveCSV(topsLast);
 //		}
 		
+		{
+			String symbol = "IBKR";
+			List<yokwe.iex.cloud.data.dataPoints.Key> keyList = yokwe.iex.cloud.data.dataPoints.Key.getKeyList(context, symbol);
+			logger.info("keyList {} = {}", symbol, keyList.size());
+			for(int i = 0; i < keyList.size(); i++) {
+				yokwe.iex.cloud.data.dataPoints.Key key = keyList.get(i); 
+				logger.info("{} {}", symbol, String.format("%3d  %-40s  %4d  %s", i, key.key, key.weight, key.description));
+			}
+		}
+		
 		logger.info("STOP");
 	}
 }

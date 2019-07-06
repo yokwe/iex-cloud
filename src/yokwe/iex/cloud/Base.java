@@ -2,11 +2,9 @@ package yokwe.iex.cloud;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
-import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -448,20 +446,6 @@ public class Base {
 		}
 	}
 
-	protected static String[] encodeSymbol(String[] symbols) {
-		try {
-			String[] ret = new String[symbols.length];
-			for(int i = 0; i < symbols.length; i++) {
-				ret[i] = URLEncoder.encode(symbols[i], "UTF-8");
-			}
-			return ret;
-		} catch (UnsupportedEncodingException e) {
-			String exceptionName = e.getClass().getSimpleName();
-			logger.error("{} {}", exceptionName, e);
-			throw new UnexpectedException(exceptionName, e);
-		}
-	}
-
 	// for Status
 	public static <E extends Base> E getObject(Context context, Class<E> clazz) {
 		ClassInfo classInfo = ClassInfo.get(clazz);
@@ -551,6 +535,42 @@ public class Base {
 			throw new UnexpectedException("method == null");
 		}
 		String url = context.getURLAsCSV(classInfo.method);
+//		logger.info("url = {}", url);
+		
+		HttpUtil.Result result = HttpUtil.download(url);
+		logger.info("tokenUsed {}", result.tokenUsed);
+		String csvString = result.result;
+		if (csvString == null) {
+			logger.error("csvString == null");
+			throw new UnexpectedException("csvString == null");
+		}
+		Reader reader = new StringReader(csvString);
+
+		List<E> list = CSVUtil.loadWithHeader(reader, clazz);
+		
+		@SuppressWarnings("unchecked")
+		E[] ret = (E[])Array.newInstance(clazz, list.size());
+		for(int i = 0; i < ret.length; i++) {
+			ret[i] = list.get(i);
+		}
+		
+		// Sort array
+		Arrays.sort(ret);
+		
+		// Return as list
+		return Arrays.asList(ret);
+	}
+
+	// for data-points/SYMBOL
+	public static <E extends Base> List<E> getCSV(Context context, Class<E> clazz, String sybmol) {
+		ClassInfo classInfo = ClassInfo.get(clazz);
+		
+		// 'https://cloud.iexapis.com/v1/status?token=sk_bb977734bffe47ef8dca20cd4cfad878'
+		if (classInfo.method == null) {
+			logger.error("method == null {}", classInfo);
+			throw new UnexpectedException("method == null");
+		}
+		String url = context.getURLAsCSV(classInfo.method, sybmol);
 //		logger.info("url = {}", url);
 		
 		HttpUtil.Result result = HttpUtil.download(url);
