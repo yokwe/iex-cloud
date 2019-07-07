@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.slf4j.LoggerFactory;
 
+import yokwe.iex.cloud.Base;
 import yokwe.iex.cloud.Context;
 import yokwe.iex.cloud.Type;
 import yokwe.iex.cloud.Version;
@@ -36,74 +37,59 @@ public class T001 {
 		}
 		
 //		{
-//			List<yokwe.iex.cloud.data.reference.iex.Symbols> symbols = yokwe.iex.cloud.data.reference.iex.Symbols.getArray(context, yokwe.iex.cloud.data.reference.iex.Symbols.class);
-//			logger.info("array symbols = {}", symbols.size());
+//			List<yokwe.iex.cloud.data.reference.iex.Symbols> symbols = Base.getArray(context, yokwe.iex.cloud.data.reference.iex.Symbols.class);
+//			logger.info("iex arr symbols = {}", symbols.size());
 //			
-////			yokwe.iex.cloud.data.reference.iex.Symbols.saveCSV(symbols);
+////			Base.saveCSV(symbols);
 //		}
-//		{
-//			List<yokwe.iex.cloud.data.reference.iex.Symbols> iexSymbols = yokwe.iex.cloud.data.reference.iex.Symbols.getCSV(context, Symbols.class);
-//			logger.info("iexSymbols = {}", iexSymbols.size());
-//			
-//			yokwe.iex.cloud.data.reference.iex.Symbols.saveCSV(iexSymbols);
-//		}
+		{
+			List<yokwe.iex.cloud.data.reference.iex.Symbols> iexSymbols = yokwe.iex.cloud.data.reference.iex.Symbols.getInstance(context);
+			logger.info("iex csv symbols = {}", iexSymbols.size());
+			
+			Base.saveCSV(iexSymbols);
+		}
 
 //		{
 //          // 100 per call
-//			List<yokwe.iex.cloud.data.reference.Symbols> symbols = yokwe.iex.cloud.data.reference.Symbols.getCSV(context, yokwe.iex.cloud.data.reference.Symbols.class);
+//			List<yokwe.iex.cloud.data.reference.Symbols> symbols = Base.getCSV(context, yokwe.iex.cloud.data.reference.Symbols.class);
 //			logger.info("symbols = {}", symbols.size());
 //			
-//			yokwe.iex.cloud.data.reference.Symbols.saveCSV(symbols);
+//			Base.saveCSV(symbols);
 //		}
 
 //		{
 //			// 100 per call
-//			List<yokwe.iex.cloud.data.reference.otc.Symbols> otcSymbols = yokwe.iex.cloud.data.reference.otc.Symbols.getCSV(context, yokwe.iex.cloud.data.reference.otc.Symbols.class);
+//			List<yokwe.iex.cloud.data.reference.otc.Symbols> otcSymbols = Base.getCSV(context, yokwe.iex.cloud.data.reference.otc.Symbols.class);
 //			logger.info("otcSymbols = {}", otcSymbols.size());
 //			
-//			yokwe.iex.cloud.data.reference.otc.Symbols.saveCSV(otcSymbols);
+//			Base.saveCSV(otcSymbols);
 //		}
 
 //		{
 //			// 1 per call
-//			List<yokwe.iex.cloud.data.reference.Exchanges> exchanges = yokwe.iex.cloud.data.reference.Exchanges.getCSV(context, yokwe.iex.cloud.data.reference.Exchanges.class);
+//			List<yokwe.iex.cloud.data.reference.Exchanges> exchanges = Base.getCSV(context, yokwe.iex.cloud.data.reference.Exchanges.class);
 //			logger.info("exchanges = {}", exchanges.size());
 //			
-//			yokwe.iex.cloud.data.reference.Exchanges.saveCSV(exchanges);
+//			Base.saveCSV(exchanges);
 //		}
 
 //		{
 //			// 1 per call
-//			List<yokwe.iex.cloud.data.reference.market.us.Exchanges> marketUSExchanges = yokwe.iex.cloud.data.reference.market.us.Exchanges.getCSV(context, yokwe.iex.cloud.data.reference.market.us.Exchanges.class);
+//			List<yokwe.iex.cloud.data.reference.market.us.Exchanges> marketUSExchanges = Base.getCSV(context, yokwe.iex.cloud.data.reference.market.us.Exchanges.class);
 //			logger.info("marketUSExchanges = {}", marketUSExchanges.size());
 //			
-//			yokwe.iex.cloud.data.reference.market.us.Exchanges.saveCSV(marketUSExchanges);
+//			Base.saveCSV(marketUSExchanges);
 //		}
 
 //		{
 //			// 100 per call
-//			List<yokwe.iex.cloud.data.reference.mutualFunds.Symbols> mfSymbols = yokwe.iex.cloud.data.reference.mutualFunds.Symbols.getCSV(context, yokwe.iex.cloud.data.reference.mutualFunds.Symbols.class);
+//			List<yokwe.iex.cloud.data.reference.mutualFunds.Symbols> mfSymbols = Base.getCSV(context, yokwe.iex.cloud.data.reference.mutualFunds.Symbols.class);
 //			logger.info("mSymbols = {}", mfSymbols.size());
 //			
-//			yokwe.iex.cloud.data.reference.mutualFunds.Symbols.saveCSV(mfSymbols);
+//			Base.saveCSV(mfSymbols);
 //		}
 
-		
-		
-//		{
-//			List<Tops> tops = Tops.getCSV(context, Tops.class);
-//			logger.info("top = {}", tops.size());
-//			
-//			Tops.saveCSV(tops);
-//		}
-
-//		{
-//			List<Tops.Last> topsLast = Tops.Last.getCSV(context, Tops.Last.class);
-//			logger.info("topsLast = {}", topsLast.size());
-//			
-//			Tops.Last.saveCSV(topsLast);
-//		}
-		
+				
 		{
 			String symbol = "IBKR";
 			List<yokwe.iex.cloud.data.dataPoints.Key> keyList = yokwe.iex.cloud.data.dataPoints.Key.getInstance(context, symbol);
