@@ -10,11 +10,16 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonNumber;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 
 import org.slf4j.Logger;
@@ -22,11 +27,15 @@ import org.slf4j.LoggerFactory;
 
 import yokwe.iex.UnexpectedException;
 import yokwe.iex.util.CSVUtil;
+import yokwe.iex.util.GenericInfo;
 import yokwe.iex.util.HttpUtil;
+import yokwe.iex.util.Util;
 
 public class Base {
 	static final Logger logger = LoggerFactory.getLogger(Base.class);
 	
+	public static final LocalDateTime NULL_LOCAL_DATE_TIME = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
+
 	public static final String PATH_DIR = "tmp/iex";
 
 	@Override
@@ -146,25 +155,25 @@ public class Base {
 				
 				switch(valueType) {
 				case NUMBER:
-					fieldInfo.setValue(this, jsonObject.getJsonNumber(fieldInfo.jsonName));
+					setValue(fieldInfo, jsonObject.getJsonNumber(fieldInfo.jsonName));
 					break;
 				case STRING:
-					fieldInfo.setValue(this, jsonObject.getJsonString(fieldInfo.jsonName));
+					setValue(fieldInfo, jsonObject.getJsonString(fieldInfo.jsonName));
 					break;
 				case TRUE:
-					fieldInfo.setValue(this, true);
+					setValue(fieldInfo, true);
 					break;
 				case FALSE:
-					fieldInfo.setValue(this, false);
+					setValue(fieldInfo, false);
 					break;
 				case NULL:
-					fieldInfo.setValue(this);
+					setValue(fieldInfo);
 					break;
 				case OBJECT:
-					fieldInfo.setValue(this, jsonObject.getJsonObject(fieldInfo.jsonName));
+					setValue(fieldInfo, jsonObject.getJsonObject(fieldInfo.jsonName));
 					break;
 				case ARRAY:
-					fieldInfo.setValue(this, jsonObject.getJsonArray(fieldInfo.jsonName));
+					setValue(fieldInfo, jsonObject.getJsonArray(fieldInfo.jsonName));
 					break;
 				default:
 					logger.error("Unknown valueType {} {}", valueType.toString(), fieldInfo.toString());
@@ -180,7 +189,7 @@ public class Base {
 					if (!fieldInfo.ignoreField) {
 						logger.warn("Assign defautl value  {} {} {}", iexInfo.clazzName, fieldInfo.name, fieldInfo.type);
 					}
-					fieldInfo.setValue(this);
+					setValue(fieldInfo);
 				}
 			}
 		} catch (IllegalAccessException | InstantiationException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
@@ -189,6 +198,258 @@ public class Base {
 			throw new UnexpectedException(exceptionName, e);
 		}
 	}
+	
+	private void setValue(ClassInfo.FieldInfo fieldInfo, JsonNumber jsonNumber) throws IllegalArgumentException, IllegalAccessException {
+		switch(fieldInfo.type) {
+		case "double":
+			fieldInfo.field.set(this, jsonNumber.doubleValue());
+			break;
+		case "long":
+			fieldInfo.field.set(this, jsonNumber.longValue());
+			break;
+		case "int":
+			fieldInfo.field.set(this, jsonNumber.intValue());
+			break;
+		case "java.math.BigDecimal":
+			fieldInfo.field.set(this, jsonNumber.bigDecimalValue());
+			break;
+		case "java.lang.String":
+			// To handle irregular case in Symbols, add this code. Value of iexId in Symbols can be number or String.
+			fieldInfo.field.set(this, jsonNumber.toString());
+			break;
+		case "java.time.LocalDateTime":
+			fieldInfo.field.set(this, Util.getLocalDateTimeFromMilli(jsonNumber.longValue()));
+			break;
+		default:
+			logger.error("Unexptected type {}", toString());
+			throw new UnexpectedException("Unexptected type");
+		}
+	}
+	private void setValue(ClassInfo.FieldInfo fieldInfo, JsonString jsonString) throws IllegalArgumentException, IllegalAccessException {
+		switch(fieldInfo.type) {
+		case "java.lang.String":
+			fieldInfo.field.set(this, jsonString.getString());
+			break;
+		case "double":
+			fieldInfo.field.set(this, Double.valueOf((jsonString.getString().length() == 0) ? "0" : jsonString.getString()));
+			break;
+		case "long":
+			fieldInfo.field.set(this, Long.valueOf((jsonString.getString().length() == 0) ? "0" : jsonString.getString()));
+			break;
+		case "int":
+			fieldInfo.field.set(this, Integer.valueOf((jsonString.getString().length() == 0) ? "0" : jsonString.getString()));
+			break;
+		default:
+			logger.error("Unexptected type {}", toString());
+			throw new UnexpectedException("Unexptected type");
+		}
+	}
+	private void setValue(ClassInfo.FieldInfo fieldInfo, boolean value) throws IllegalArgumentException, IllegalAccessException {
+		switch(fieldInfo.type) {
+		case "boolean":
+			fieldInfo.field.set(this, value);
+			break;
+		default:
+			logger.error("Unexptected type {}", toString());
+			throw new UnexpectedException("Unexptected type");
+		}
+	}
+	private void setValue(ClassInfo.FieldInfo fieldInfo) throws IllegalArgumentException, IllegalAccessException {
+		switch(fieldInfo.type) {
+		case "double":
+			fieldInfo.field.set(this, 0);
+			break;
+		case "long":
+			fieldInfo.field.set(this, 0);
+			break;
+		case "int":
+			fieldInfo.field.set(this, 0);
+			break;
+		case "java.time.LocalDateTime":
+			fieldInfo.field.set(this, NULL_LOCAL_DATE_TIME);
+			break;
+		case "java.lang.String":
+			fieldInfo.field.set(this, "");
+			break;
+		default:
+			logger.error("Unexptected type {}", toString());
+			throw new UnexpectedException("Unexptected type");
+		}
+	}
+	private void setValue(ClassInfo.FieldInfo fieldInfo, JsonArray jsonArray) throws IllegalArgumentException, IllegalAccessException {
+		if (!fieldInfo.isArray) {
+			logger.error("Field is not array  {}", toString());
+			throw new UnexpectedException("Field is not array");
+		}
+		
+		Class<?> componentType = fieldInfo.field.getType().getComponentType();
+		String componentTypeName = componentType.getName();
+		switch(componentTypeName) {
+		case "java.lang.String":
+		{
+			int jsonArraySize = jsonArray.size();
+			String[] value = new String[jsonArray.size()];
+			
+			for(int i = 0; i < jsonArraySize; i++) {
+				JsonValue jsonValue = jsonArray.get(i);
+				switch(jsonValue.getValueType()) {
+				case STRING:
+					value[i] = jsonArray.getString(i);
+					break;
+				default:
+					logger.error("Unexpected json array element type {} {}", jsonValue.getValueType().toString(), toString());
+					throw new UnexpectedException("Unexpected json array element type");
+				}
+			}
+			fieldInfo.field.set(this, value);
+		}
+			break;
+		default:
+			logger.error("Unexpected array component type {} {}", componentTypeName, toString());
+			throw new UnexpectedException("Unexpected array component type");
+		}
+	}
+
+	private static Map<String, Long> buildLongMap(JsonObject jsonObject) {
+		Map<String, Long> ret = new TreeMap<>();
+		
+		for(String childKey: jsonObject.keySet()) {
+			JsonValue childValue = jsonObject.get(childKey);
+			ValueType childValueType = childValue.getValueType();
+			
+			switch(childValueType) {
+			case NUMBER:
+			{
+				JsonNumber jsonNumber = jsonObject.getJsonNumber(childKey);
+				long value = jsonNumber.longValue();
+				ret.put(childKey, value);
+			}
+				break;
+			case STRING:
+			{
+				JsonString jsonString = jsonObject.getJsonString(childKey);
+				long value = Long.valueOf((jsonString.getString().length() == 0) ? "0" : jsonString.getString());
+				ret.put(childKey, value);
+			}
+				break;
+			default:
+				logger.error("Unexptected childValueType {}", childValueType);
+				throw new UnexpectedException("Unexptected childValueType");
+			}
+		}
+		return ret;
+	}
+	private static Map<String, Integer> buildIntegerMap(JsonObject jsonObject) {
+		Map<String, Integer> ret = new TreeMap<>();
+		
+		for(String childKey: jsonObject.keySet()) {
+			JsonValue childValue = jsonObject.get(childKey);
+			ValueType childValueType = childValue.getValueType();
+			
+			switch(childValueType) {
+			case NUMBER:
+			{
+				JsonNumber jsonNumber = jsonObject.getJsonNumber(childKey);
+				int value = jsonNumber.intValue();
+				ret.put(childKey, value);
+			}
+				break;
+			case STRING:
+			{
+				JsonString jsonString = jsonObject.getJsonString(childKey);
+				int value = Integer.valueOf((jsonString.getString().length() == 0) ? "0" : jsonString.getString());
+				ret.put(childKey, value);
+			}
+				break;
+			default:
+				logger.error("Unexptected childValueType {}", childValueType);
+				throw new UnexpectedException("Unexptected childValueType");
+			}
+		}
+		return ret;
+	}
+	private static Map<String, Base> buildBaseMap(JsonObject jsonObject, Class<?> mapValueClass) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		Map<String, Base> ret = new TreeMap<>();
+		
+		for(String childKey: jsonObject.keySet()) {
+			JsonValue childValue = jsonObject.get(childKey);
+			ValueType childValueType = childValue.getValueType();
+			
+			switch(childValueType) {
+			case OBJECT:
+			{
+				JsonObject jsonObjectValue = jsonObject.getJsonObject(childKey);
+				Base value = (Base)mapValueClass.getDeclaredConstructor(JsonObject.class).newInstance(jsonObjectValue);
+
+				ret.put(childKey, value);
+			}
+				break;
+			default:
+				logger.error("Unexptected childValueType {}", childValueType);
+				throw new UnexpectedException("Unexptected childValueType");
+			}
+		}
+		return ret;
+	}
+
+	private void setValue(ClassInfo.FieldInfo fieldInfo, JsonObject jsonObject) throws IllegalArgumentException, IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		Class<?> fieldType = fieldInfo.field.getType();
+		
+		if (Base.class.isAssignableFrom(fieldType)) {
+			Base child = (Base)fieldType.getDeclaredConstructor(JsonObject.class).newInstance(jsonObject);
+//			logger.info("child {}", child.toString());
+			
+			fieldInfo.field.set(this, child);
+		} else {
+			String fieldTypeName = fieldType.getName();
+			switch(fieldTypeName) {
+			case "java.util.Map":
+			{
+				GenericInfo genericInfo = new GenericInfo(fieldInfo.field);
+				if (genericInfo.classArguments.length != 2) {
+					logger.error("Unexptected genericInfo.classArguments.length {}", genericInfo.classArguments.length);
+					throw new UnexpectedException("Unexptected genericInfo.classArguments.length");
+				}
+				Class<?> mapKeyClass   = genericInfo.classArguments[0];
+				Class<?> mapValueClass = genericInfo.classArguments[1];
+											
+				String mapKeyClassName   = mapKeyClass.getTypeName();
+				String mapValueClassName = mapValueClass.getTypeName();
+				
+//				logger.info("mapKeyClassName   {}", mapKeyClassName);
+//				logger.info("mapValueClassName {}", mapValueClassName);
+				
+				if (!mapKeyClassName.equals("java.lang.String")) {
+					logger.error("Unexptected keyTypeName {}", mapKeyClassName);
+					throw new UnexpectedException("Unexptected keyTypeName");
+				}
+				
+				switch(mapValueClassName) {
+				case "java.lang.Long":
+					fieldInfo.field.set(this, buildLongMap(jsonObject));
+					break;
+				case "java.lang.Integer":
+					fieldInfo.field.set(this, buildIntegerMap(jsonObject));
+					break;
+				default:
+					// If value extends from Base
+					if (Base.class.isAssignableFrom(mapValueClass)) {
+						fieldInfo.field.set(this, buildBaseMap(jsonObject, mapValueClass));
+					} else {
+						logger.error("Unexptected keyTypeName {}", mapKeyClassName);
+						throw new UnexpectedException("Unexptected keyTypeName");
+					}
+				}
+			}
+				break;
+			default:
+				logger.error("Unexptected type {}", toString());
+				logger.error("fieldTypeName {}", fieldTypeName);
+				throw new UnexpectedException("Unexptected type");
+			}
+		}
+	}
+
 
 	// for Status
 	public static <E extends Base> E getObject(Context context, Class<E> clazz) {
