@@ -460,7 +460,8 @@ public class Base {
 		YTD ("ytd"),  // Year to date
 		M6  ("6m"),   // Six months
 		M3  ("3m"),   // Three months
-		M1  ("1m"),   // One month (default)
+		M1  ("1m"),   // One month
+		D5  ("5d"),   // Five days
 		NEXT("next"); // The next upcoming dividend
 		
 		public final String value;
