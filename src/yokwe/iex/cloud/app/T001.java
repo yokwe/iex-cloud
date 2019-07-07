@@ -103,6 +103,7 @@ public class T001 {
 		}
 
 //		{
+//		// 10 per return record
 //			List<yokwe.iex.cloud.data.stock.Dividends> dividendList = yokwe.iex.cloud.data.stock.Dividends.getInstance(context, "trtn", Range.Y1);
 //			logger.info("dividendList = {}", dividendList.size());
 //			for(int i = 0; i < dividendList.size(); i++) {
@@ -111,10 +112,27 @@ public class T001 {
 //			}
 //		}
 
-		{
-			yokwe.iex.cloud.data.stock.Previous previous = yokwe.iex.cloud.data.stock.Previous.getInstance(context, "trtn");
-			logger.info("previous = {}", previous);
-		}
+//		{
+//		// 2 per call
+//			yokwe.iex.cloud.data.stock.Previous previous = yokwe.iex.cloud.data.stock.Previous.getInstance(context, "trtn");
+//			logger.info("previous = {}", previous);
+//		}
+
+//		{
+//		// 2 per call
+//			yokwe.iex.cloud.data.stock.ChartDate chartDate = yokwe.iex.cloud.data.stock.ChartDate.getInstance(context, "trtn", "20190705");
+//			logger.info("chartDate = {}", chartDate);
+//		}
+		
+//		{
+//		// 10 per returned record
+//			List<yokwe.iex.cloud.data.stock.Chart> chartList = yokwe.iex.cloud.data.stock.Chart.getInstance(context, "trtn", Range.D5);
+//			logger.info("chartList = {}", chartList.size());
+//			for(int i = 0; i < chartList.size(); i++) {
+//				yokwe.iex.cloud.data.stock.Chart chart = chartList.get(i); 
+//				logger.info("{}", chart);
+//			}
+//		}
 
 		logger.info("STOP");
 	}
