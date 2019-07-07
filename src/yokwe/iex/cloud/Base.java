@@ -2,8 +2,10 @@ package yokwe.iex.cloud;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -450,17 +452,56 @@ public class Base {
 		}
 	}
 
-
-	// for Status
-	public static <E extends Base> E getObject(Context context, Class<E> clazz) {
-		ClassInfo classInfo = ClassInfo.get(clazz);
-		if (classInfo.method == null) {
-			logger.error("method == null {}", classInfo);
-			throw new UnexpectedException("method == null");
-		}
-		String url = context.getURL(classInfo.method);
-//		logger.info("url = {}", url);
+	// Date range used in Dividends
+	public enum Range {
+		Y5  ("5y"),   // Five years
+		Y2  ("2y"),   // Two years
+		Y1  ("1y"),   // One year
+		YTD ("ytd"),  // Year to date
+		M6  ("6m"),   // Six months
+		M3  ("3m"),   // Three months
+		M1  ("1m"),   // One month (default)
+		NEXT("next"); // The next upcoming dividend
 		
+		public final String value;
+		Range(String value) {
+			this.value = value;
+		}
+	}
+
+	// Format
+	public enum Format {
+		JSON ("json"),  // Five years
+		CSV  ("csv");   // Two years
+		
+		public final String value;
+		Format(String value) {
+			this.value = value;
+		}
+	}
+	
+	public static String encodeString(String symbol) {
+		try {
+			String ret = URLEncoder.encode(symbol, "UTF-8");
+			return ret;
+		} catch (UnsupportedEncodingException e) {
+			String exceptionName = e.getClass().getSimpleName();
+			logger.error("{} {}", exceptionName, e);
+			throw new UnexpectedException(exceptionName, e);
+		}
+	}
+
+	public static String[] encodeSymbol(String[] symbols) {
+		String[] ret = new String[symbols.length];
+		for(int i = 0; i < symbols.length; i++) {
+			ret[i] = encodeString(symbols[i]);
+		}
+		return ret;
+	}
+
+
+
+	public static <E extends Base> E getObject(String url, Class<E> clazz) {
 		HttpUtil.Result result = HttpUtil.download(url);
 		logger.info("tokenUsed {}", result.tokenUsed);
 		String jsonString = result.result;
@@ -482,18 +523,7 @@ public class Base {
 		}
 	}
 
-	// for symbols
-	public static <E extends Base> List<E> getArray(Context context, Class<E> clazz) {
-		ClassInfo classInfo = ClassInfo.get(clazz);
-		
-		// 'https://cloud.iexapis.com/v1/status?token=sk_bb977734bffe47ef8dca20cd4cfad878'
-		if (classInfo.method == null) {
-			logger.error("method == null {}", classInfo);
-			throw new UnexpectedException("method == null");
-		}
-		String url = context.getURL(classInfo.method);
-//		logger.info("url = {}", url);
-		
+	public static <E extends Base> List<E> getArray(String url, Class<E> clazz) {
 		HttpUtil.Result result = HttpUtil.download(url);
 		logger.info("tokenUsed {}", result.tokenUsed);
 		String jsonString = result.result;
@@ -529,17 +559,7 @@ public class Base {
 	}
 
 	// for symbols
-	public static <E extends Base> List<E> getCSV(Context context, Class<E> clazz) {
-		ClassInfo classInfo = ClassInfo.get(clazz);
-		
-		// 'https://cloud.iexapis.com/v1/status?token=sk_bb977734bffe47ef8dca20cd4cfad878'
-		if (classInfo.method == null) {
-			logger.error("method == null {}", classInfo);
-			throw new UnexpectedException("method == null");
-		}
-		String url = context.getURLAsCSV(classInfo.method);
-//		logger.info("url = {}", url);
-		
+	public static <E extends Base> List<E> getCSV(String url, Class<E> clazz) {
 		HttpUtil.Result result = HttpUtil.download(url);
 		logger.info("tokenUsed {}", result.tokenUsed);
 		String csvString = result.result;
@@ -564,42 +584,9 @@ public class Base {
 		return Arrays.asList(ret);
 	}
 
-	// for data-points/SYMBOL
-	public static <E extends Base> List<E> getCSV(Context context, Class<E> clazz, String sybmol) {
-		ClassInfo classInfo = ClassInfo.get(clazz);
-		
-		// 'https://cloud.iexapis.com/v1/status?token=sk_bb977734bffe47ef8dca20cd4cfad878'
-		if (classInfo.method == null) {
-			logger.error("method == null {}", classInfo);
-			throw new UnexpectedException("method == null");
-		}
-		String url = context.getURLAsCSV(classInfo.method, sybmol);
-//		logger.info("url = {}", url);
-		
-		HttpUtil.Result result = HttpUtil.download(url);
-		logger.info("tokenUsed {}", result.tokenUsed);
-		String csvString = result.result;
-		if (csvString == null) {
-			logger.error("csvString == null");
-			throw new UnexpectedException("csvString == null");
-		}
-		Reader reader = new StringReader(csvString);
-
-		List<E> list = CSVUtil.loadWithHeader(reader, clazz);
-		
-		@SuppressWarnings("unchecked")
-		E[] ret = (E[])Array.newInstance(clazz, list.size());
-		for(int i = 0; i < ret.length; i++) {
-			ret[i] = list.get(i);
-		}
-		
-		// Sort array
-		Arrays.sort(ret);
-		
-		// Return as list
-		return Arrays.asList(ret);
-	}
-
+	
+	
+	// CSV Save and Load
 	public static <E extends Base> void saveCSV(List<E> dataList) {
 		E o = dataList.get(0);
 		ClassInfo classInfo = ClassInfo.get(o);
