@@ -117,7 +117,18 @@ public class T001 {
 //			yokwe.iex.cloud.data.stock.Previous previous = yokwe.iex.cloud.data.stock.Previous.getInstance(context, "trtn");
 //			logger.info("previous = {}", previous);
 //		}
+		
+//		{
+//		// 2 per call
+//			List<yokwe.iex.cloud.data.stock.Previous> previousList = yokwe.iex.cloud.data.stock.Previous.getInstance(context, "trtn", "ibm");
+//			logger.info("previousList = {}", previousList.size());
+//			for(int i = 0; i < previousList.size(); i++) {
+//				yokwe.iex.cloud.data.stock.Previous previous = previousList.get(i); 
+//				logger.info("{}", previous);
+//			}
+//		}
 
+		
 //		{
 //		// 2 per call
 //			yokwe.iex.cloud.data.stock.ChartDate chartDate = yokwe.iex.cloud.data.stock.ChartDate.getInstance(context, "trtn", "20190705");
@@ -131,6 +142,21 @@ public class T001 {
 //			for(int i = 0; i < chartList.size(); i++) {
 //				yokwe.iex.cloud.data.stock.Chart chart = chartList.get(i); 
 //				logger.info("{}", chart);
+//			}
+//		}
+
+//		{
+//		// 1 per call
+//			yokwe.iex.cloud.data.stock.OHLC ohlc = yokwe.iex.cloud.data.stock.OHLC.getInstance(context, "trtn");
+//			logger.info("ohlc = {}", ohlc);
+//		}
+//		{
+//		// 1 per call
+//			List<yokwe.iex.cloud.data.stock.OHLC> ohlcList = yokwe.iex.cloud.data.stock.OHLC.getInstance(context, "trtn", "ibm");
+//			logger.info("ohlcList = {}", ohlcList.size());
+//			for(int i = 0; i < ohlcList.size(); i++) {
+//				yokwe.iex.cloud.data.stock.OHLC ohlc = ohlcList.get(i); 
+//				logger.info("{}", ohlc);
 //			}
 //		}
 
