@@ -1,8 +1,11 @@
 package yokwe.iex.cloud.data.reference.market.us;
 
+import java.util.List;
+
 import javax.json.JsonObject;
 
 import yokwe.iex.cloud.Base;
+import yokwe.iex.cloud.Context;
 
 public class Exchanges extends Base implements Comparable<Exchanges> {
 	public static final int    DATA_WEIGHT = 1; // 1 per call
@@ -36,4 +39,13 @@ public class Exchanges extends Base implements Comparable<Exchanges> {
 	public int compareTo(Exchanges that) {
 		return this.mic.compareTo(that.mic);
 	}
+	
+	public static List<Exchanges> getInstance(Context context) {
+		String base = context.getBaseURL(METHOD);
+		String url  = context.getURL(base, Format.CSV);
+		
+		List<Exchanges> ret = getCSV(url, Exchanges.class);
+		return ret;
+	}
+
 }

@@ -33,7 +33,10 @@ public class Symbols extends Base implements Comparable<Symbols> {
 	}
 	
 	public static List<Symbols> getInstance(Context context) {
-		List<Symbols> ret = getCSV(context, Symbols.class);
+		String base = context.getBaseURL(METHOD);
+		String url  = context.getURL(base, Format.CSV);
+		
+		List<Symbols> ret  = getCSV(url, Symbols.class);
 		return ret;
 	}
 }

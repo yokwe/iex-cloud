@@ -1,8 +1,11 @@
 package yokwe.iex.cloud.data.reference.mutualFunds;
 
+import java.util.List;
+
 import javax.json.JsonObject;
 
 import yokwe.iex.cloud.Base;
+import yokwe.iex.cloud.Context;
 
 public class Symbols extends Base implements Comparable<Symbols> {
 	public static final int    DATA_WEIGHT = 100; // 100 per call
@@ -39,5 +42,13 @@ public class Symbols extends Base implements Comparable<Symbols> {
 	@Override
 	public int compareTo(Symbols that) {
 		return this.symbol.compareTo(that.symbol);
+	}
+	
+	public static List<Symbols> getInstance(Context context) {
+		String base = context.getBaseURL(METHOD);
+		String url  = context.getURL(base, Format.CSV);
+		
+		List<Symbols> ret = getCSV(url, Symbols.class);
+		return ret;
 	}
 }

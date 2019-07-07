@@ -34,8 +34,10 @@ public class Key extends Base implements Comparable<Key>{
 	}
 	
 	public static List<Key> getInstance(Context context, String symbol) {
-		List<Key> ret = getCSV(context, Key.class, symbol);
+		String base = context.getBaseURL(METHOD);
+		String url  = context.getURL(String.format("%s/%s", base, encodeString(symbol)), Format.CSV);
+		
+		List<Key> ret = getCSV(url, Key.class);
 		return ret;
 	}
-
 }

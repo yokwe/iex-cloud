@@ -100,7 +100,10 @@ public class Key extends Base {
 	}
 	
 	public static List<Key> getInstance(Context context) {
-		List<Key> ret = getArray(context, Key.class);
+		String base = context.getBaseURL(METHOD);
+		String url  = context.getURL(base);
+
+		List<Key> ret = getArray(url, Key.class);
 		return ret;
 	}
 }

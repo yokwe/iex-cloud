@@ -29,7 +29,8 @@ public class Status extends Base {
 	}
 	
 	public static Status getInstance(Context context) {
-		Status ret = getObject(context, Status.class);
+		String base = context.getBaseURL(METHOD);
+		Status ret = getObject(base, Status.class);
 		return ret;
 	}
 }

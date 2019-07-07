@@ -68,8 +68,10 @@ public class Usage extends Base {
 	}
 	
 	public static Usage getInstance(Context context) {
-		Usage ret = getObject(context, Usage.class);
+		String base = context.getBaseURL(METHOD);
+		String url  = context.getURL(base);
+		
+		Usage  ret = getObject(url, Usage.class);
 		return ret;
 	}
-
 }
