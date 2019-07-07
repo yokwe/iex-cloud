@@ -77,8 +77,6 @@ public class Dividends extends Base implements Comparable<Dividends> {
 		return this.exDate.compareTo(that.exDate);
 	}
 	
-	static final org.slf4j.Logger logger = LoggerFactory.getLogger(Dividends.class);
-
 	public static List<Dividends> getInstance(Context context, String symbol, Range range) {
 		String base = context.getBaseURL(String.format(METHOD, encodeString(symbol), range.value));
 		String url  = context.getURL(base, Format.CSV);
