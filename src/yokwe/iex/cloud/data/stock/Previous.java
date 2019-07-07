@@ -1,13 +1,21 @@
 package yokwe.iex.cloud.data.stock;
 
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import javax.json.JsonObject;
 
+import org.slf4j.LoggerFactory;
+
+import yokwe.iex.UnexpectedException;
 import yokwe.iex.cloud.Base;
 import yokwe.iex.cloud.Context;
 
 public class Previous extends Base implements Comparable<Previous> {	
+	static final org.slf4j.Logger logger = LoggerFactory.getLogger(Previous.class);
+
 	public static final int    DATA_WEIGHT = 2; // 2 per return records
-	public static final String METHOD      = "/stock/%s/previous";
 	
 //	{
 //	    "date": "2019-07-05",
@@ -73,6 +81,7 @@ public class Previous extends Base implements Comparable<Previous> {
 		return this.symbol.compareTo(that.symbol);
 	}
 	
+	public static final String METHOD      = "/stock/%s/previous";
 	public static Previous getInstance(Context context, String symbol) {
 		String base = context.getBaseURL(String.format(METHOD, encodeString(symbol)));
 		String url  = context.getURL(base, Format.JSON);
@@ -80,4 +89,28 @@ public class Previous extends Base implements Comparable<Previous> {
 		Previous ret = getObject(url, Previous.class);
 		return ret;
 	}
+	
+	public static final String METHOD_MARKET = "/stock/market/previous";
+	public static List<Previous> getInstance(Context context, String... symbols) {
+		// Sanity check
+		if (symbols.length == 0) {
+			logger.error("symbols.length == 0");
+			throw new UnexpectedException("symbols.length == 0");
+		}
+		
+		String[] symbolArray = new String[symbols.length];
+		for(int i = 0; i < symbols.length; i++) {
+			symbolArray[i] = Base.encodeString(symbols[i]);
+		}
+		
+		Map<String, String> paramMap = new TreeMap<>();
+		paramMap.put("symbols", String.join(",", symbolArray));
+		
+		String base = context.getBaseURL(METHOD_MARKET);
+		String url  = context.getURL(base, Format.JSON, paramMap);
+
+		List<Previous> ret = getArray(url, Previous.class);
+		return ret;
+	}
+
 }
