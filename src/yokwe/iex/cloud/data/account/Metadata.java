@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import javax.json.JsonObject;
 
 import yokwe.iex.cloud.Base;
+import yokwe.iex.cloud.Context;
 import yokwe.iex.cloud.IEXCloud.TimeZone;
 import yokwe.iex.cloud.IEXCloud.UseTimeZone;
 
@@ -34,5 +35,10 @@ public class Metadata extends Base {
 
 	public Metadata(JsonObject jsonObject) {
 		super(jsonObject);
+	}
+
+	public static Metadata getInstance(Context context) {
+		Metadata ret = getObject(context, Metadata.class);
+		return ret;
 	}
 }

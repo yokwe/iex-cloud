@@ -21,17 +21,17 @@ public class T001 {
 		logger.info("context = {}", context);
 		
 		{
-			Status status = Status.getObject(context, Status.class);
+			Status status = Status.getInstance(context);
 			logger.info("status = {}", status);
 		}
 		
 		{
-			Metadata metadata = Metadata.getObject(context, Metadata.class);
+			Metadata metadata = Metadata.getInstance(context);
 			logger.info("metadata = {}", metadata);
 		}
 		
 		{
-			Usage usage = Usage.getObject(context, Usage.class);
+			Usage usage = Usage.getInstance(context);
 			logger.info("usage = {}", usage);
 		}
 		
@@ -106,7 +106,7 @@ public class T001 {
 		
 		{
 			String symbol = "IBKR";
-			List<yokwe.iex.cloud.data.dataPoints.Key> keyList = yokwe.iex.cloud.data.dataPoints.Key.getKeyList(context, symbol);
+			List<yokwe.iex.cloud.data.dataPoints.Key> keyList = yokwe.iex.cloud.data.dataPoints.Key.getInstance(context, symbol);
 			logger.info("keyList {} = {}", symbol, keyList.size());
 			for(int i = 0; i < keyList.size(); i++) {
 				yokwe.iex.cloud.data.dataPoints.Key key = keyList.get(i); 
@@ -115,7 +115,7 @@ public class T001 {
 		}
 		
 		{
-			List<yokwe.iex.cloud.data.timeSeries.Key> keyList = yokwe.iex.cloud.data.timeSeries.Key.getKeyList(context);
+			List<yokwe.iex.cloud.data.timeSeries.Key> keyList = yokwe.iex.cloud.data.timeSeries.Key.getInstance(context);
 			logger.info("keyList = {}", keyList.size());
 			for(int i = 0; i < keyList.size(); i++) {
 				yokwe.iex.cloud.data.timeSeries.Key key = keyList.get(i); 

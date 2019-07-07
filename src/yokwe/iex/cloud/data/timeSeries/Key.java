@@ -99,7 +99,7 @@ public class Key extends Base {
 		super(jsonObject);
 	}
 	
-	public static List<Key> getKeyList(Context context) {
+	public static List<Key> getInstance(Context context) {
 		List<Key> ret = getArray(context, Key.class);
 		return ret;
 	}

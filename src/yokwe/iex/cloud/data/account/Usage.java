@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.json.JsonObject;
 
 import yokwe.iex.cloud.Base;
+import yokwe.iex.cloud.Context;
 
 public class Usage extends Base {
 	public static final int    DATA_WEIGHT = 0; // FREE
@@ -65,4 +66,10 @@ public class Usage extends Base {
 	public Usage(JsonObject jsonObject) {
 		super(jsonObject);
 	}
+	
+	public static Usage getInstance(Context context) {
+		Usage ret = getObject(context, Usage.class);
+		return ret;
+	}
+
 }

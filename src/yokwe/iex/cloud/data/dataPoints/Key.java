@@ -33,7 +33,7 @@ public class Key extends Base implements Comparable<Key>{
 		return this.key.compareTo(that.key);
 	}
 	
-	public static List<Key> getKeyList(Context context, String symbol) {
+	public static List<Key> getInstance(Context context, String symbol) {
 		List<Key> ret = getCSV(context, Key.class, symbol);
 		return ret;
 	}

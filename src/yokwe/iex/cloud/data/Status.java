@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import javax.json.JsonObject;
 
 import yokwe.iex.cloud.Base;
+import yokwe.iex.cloud.Context;
 import yokwe.iex.cloud.IEXCloud.TimeZone;
 import yokwe.iex.cloud.IEXCloud.UseTimeZone;
 
@@ -25,5 +26,10 @@ public class Status extends Base {
 	
 	public Status(JsonObject jsonObject) {
 		super(jsonObject);
+	}
+	
+	public static Status getInstance(Context context) {
+		Status ret = getObject(context, Status.class);
+		return ret;
 	}
 }
