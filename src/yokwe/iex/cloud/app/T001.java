@@ -111,6 +111,11 @@ public class T001 {
 //			}
 //		}
 
+		{
+			yokwe.iex.cloud.data.stock.Previous previous = yokwe.iex.cloud.data.stock.Previous.getInstance(context, "trtn");
+			logger.info("previous = {}", previous);
+		}
+
 		logger.info("STOP");
 	}
 }
