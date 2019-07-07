@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.json.JsonObject;
 
-import org.slf4j.LoggerFactory;
-
 import yokwe.iex.cloud.Base;
 import yokwe.iex.cloud.Context;
 
