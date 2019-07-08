@@ -90,14 +90,32 @@ public class ClassInfo {
 	public final String            path;
 	public final FieldInfo[]       fieldInfos;
 	public final int               fieldSize;
-	public final String            filter;
 	public final Constructor<Base> construcor;
 	
-	private static Field getField(Class<?> clazz, String fieldName) {
+	private static String getStaticStringFieldValue(Class<?> clazz, String fieldName) {
 		try {
-			return clazz.getDeclaredField(fieldName);
+			Field field = clazz.getDeclaredField(fieldName);
+			if (field != null) {
+				if (!Modifier.isStatic(field.getModifiers())) {
+					logger.error("METHOD field is not static {}", clazz.getName());
+					throw new UnexpectedException("METHOD field is not static");
+				}
+				String fieldTypeName = field.getType().getName();
+				if (!fieldTypeName.equals("java.lang.String")) {
+					logger.error("Unexpected fieldTypeName {}", fieldTypeName);
+					throw new UnexpectedException("Unexpected fieldTypeName");
+				}
+				Object value = field.get(null);
+				return (String)value;
+			} else {
+				return null;
+			}
 		} catch (NoSuchFieldException e) {
 			return null;
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			String exceptionName = e.getClass().getSimpleName();
+			logger.error("{} {}", exceptionName, e);
+			throw new UnexpectedException(exceptionName, e);
 		}
 	}
 	
@@ -122,74 +140,13 @@ public class ClassInfo {
 				}
 			}
 			
-			String method;
-			{
-				Field field = getField(clazz, "METHOD");
-				if (field != null) {
-					if (!Modifier.isStatic(field.getModifiers())) {
-						logger.error("METHOD field is not static {}", clazz.getName());
-						throw new UnexpectedException("METHOD field is not static");
-					}
-					String fieldTypeName = field.getType().getName();
-					if (!fieldTypeName.equals("java.lang.String")) {
-						logger.error("Unexpected fieldTypeName {}", fieldTypeName);
-						throw new UnexpectedException("Unexpected fieldTypeName");
-					}
-					Object value = field.get(null);
-					if (value instanceof String) {
-						method = (String)value;
-					} else {
-						logger.error("Unexpected value {}", value.getClass().getName());
-						throw new UnexpectedException("Unexpected value");
-					}
-				} else {
-					method = null;
-				}
-			}
-
-			String path;
-			{
-				Field field = getField(clazz, "PATH");
-				if (field != null) {
-					if (!Modifier.isStatic(field.getModifiers())) {
-						logger.error("PATH field is not static {}", clazz.getName());
-						throw new UnexpectedException("PATH field is not static");
-					}
-					String fieldTypeName = field.getType().getName();
-					if (!fieldTypeName.equals("java.lang.String")) {
-						logger.error("Unexpected fieldTypeName {}", fieldTypeName);
-						throw new UnexpectedException("Unexpected fieldTypeName");
-					}
-					Object value = field.get(null);
-					if (value instanceof String) {
-						path = (String)value;
-					} else {
-						logger.error("Unexpected value {}", value.getClass().getName());
-						throw new UnexpectedException("Unexpected value");
-					}
-				} else {
-					path = null;
-				}
-			}
-			
-			String filter;
-			{
-				List<String>filterList = new ArrayList<>();
-				for(ClassInfo.FieldInfo fiedlInfo: fieldInfos) {
-					if (fiedlInfo.ignoreField) continue;
-					filterList.add(fiedlInfo.jsonName);
-				}
-				filter = String.join(",", filterList.toArray(new String[0]));
-			}
-
 			this.clazzName  = clazz.getName();
-			this.method     = method;
-			this.path       = path;
+			this.method     = getStaticStringFieldValue(clazz, "METHOD");
+			this.path       = getStaticStringFieldValue(clazz, "PATH");
 			this.fieldInfos = fieldInfos;
 			this.fieldSize  = fieldSize;
-			this.filter     = filter;
 			this.construcor = clazz.getDeclaredConstructor(JsonObject.class);
-		} catch (SecurityException | IllegalArgumentException | IllegalAccessException | NoSuchMethodException e) {
+		} catch (SecurityException | IllegalArgumentException | NoSuchMethodException e) {
 			String exceptionName = e.getClass().getSimpleName();
 			logger.error("{} {}", exceptionName, e);
 			throw new UnexpectedException(exceptionName, e);
