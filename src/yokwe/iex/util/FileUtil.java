@@ -61,14 +61,28 @@ public class FileUtil {
 		}
 	}
 	
+	
+	public static void write(String path, String content) {
+		File file = new File(path);
+		write(file, content);
+	}
 	public static void write(File file, String content) {
 		char[] buffer = new char[65536];
 		
-		try (BufferedWriter bw = new BufferedWriter(new FileWriter(file), buffer.length)) {
+		try {
 			// Make parent directory if necessary.
-			file.getParentFile().mkdirs();
+			if (!file.getParentFile().exists()) {
+				file.getParentFile().mkdirs();
+			}
+			// Make sure parent directory is writeable
 			file.createNewFile();
-			
+		} catch (IOException e) {
+			String exceptionName = e.getClass().getSimpleName();
+			logger.error("{} {}", exceptionName, e);
+			throw new UnexpectedException(exceptionName, e);
+		}
+
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(file), buffer.length)) {
 			bw.append(content);
 		} catch (IOException e) {
 			String exceptionName = e.getClass().getSimpleName();
