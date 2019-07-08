@@ -1,5 +1,6 @@
 package yokwe.iex.cloud;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -7,6 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import javax.json.JsonObject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,22 +67,31 @@ public class ClassInfo {
 	public static ClassInfo get(Base o) {
 		return get(o.getClass());
 	}
-	public static ClassInfo get(Class<? extends Base> clazz) {
-		String key = clazz.getName();
-		
-		if (map.containsKey(key)) return map.get(key);
-		
-		ClassInfo value = new ClassInfo(clazz);
-		map.put(key, value);
-		return value;
+	public static ClassInfo get(Class<?> clazz) {
+		if (Base.class.isAssignableFrom(clazz)) {
+			@SuppressWarnings("unchecked")
+			Class<Base> clazzBase = (Class<Base>)clazz;
+
+			String key = clazzBase.getName();
+			
+			if (map.containsKey(key)) return map.get(key);
+			
+			ClassInfo value = new ClassInfo(clazzBase);
+			map.put(key, value);
+			return value;
+		} else {
+			logger.error("Unexpected clazz {}", clazz.getClass().getName());
+			throw new UnexpectedException("Unexpected clazz");
+		}
 	}
 
-	public final String      clazzName;
-	public final String      method;
-	public final String      path;
-	public final FieldInfo[] fieldInfos;
-	public final int         fieldSize;
-	public final String      filter;
+	public final String            clazzName;
+	public final String            method;
+	public final String            path;
+	public final FieldInfo[]       fieldInfos;
+	public final int               fieldSize;
+	public final String            filter;
+	public final Constructor<Base> construcor;
 	
 	private static Field getField(Class<?> clazz, String fieldName) {
 		try {
@@ -89,7 +101,7 @@ public class ClassInfo {
 		}
 	}
 	
-	ClassInfo(Class<? extends Base> clazz) {
+	ClassInfo(Class<Base> clazz) {
 		try {
 			List<Field> fieldList = new ArrayList<>();
 			for(Field field: clazz.getDeclaredFields()) {
@@ -176,7 +188,8 @@ public class ClassInfo {
 			this.fieldInfos = fieldInfos;
 			this.fieldSize  = fieldSize;
 			this.filter     = filter;
-		} catch (SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			this.construcor = clazz.getDeclaredConstructor(JsonObject.class);
+		} catch (SecurityException | IllegalArgumentException | IllegalAccessException | NoSuchMethodException e) {
 			String exceptionName = e.getClass().getSimpleName();
 			logger.error("{} {}", exceptionName, e);
 			throw new UnexpectedException(exceptionName, e);
