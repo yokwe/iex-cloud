@@ -598,8 +598,8 @@ public class Base {
 	
 	
 	// CSV Save and Load
-	public static void saveCSV(List<Base> dataList) {
-		Base o = dataList.get(0);
+	public static <E extends Base> void saveCSV(List<E> dataList) {
+		E o = dataList.get(0);
 		ClassInfo classInfo = ClassInfo.get(o);
 		
 		if (classInfo.path == null) {
@@ -612,7 +612,7 @@ public class Base {
 
 		CSVUtil.saveWithHeader(dataList, path);
 	}
-	public static List<Base> loadCSV(Class<Base> clazz) {
+	public static <E extends Base> List<E> loadCSV(Class<E> clazz) {
 		ClassInfo classInfo = ClassInfo.get(clazz);
 		
 		if (classInfo.path == null) {
