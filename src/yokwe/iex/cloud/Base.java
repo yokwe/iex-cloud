@@ -371,6 +371,8 @@ public class Base {
 		return ret;
 	}
 	private static Map<String, Base> buildBaseMap(JsonObject jsonObject, Class<?> mapValueClass) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+		ClassInfo classInfo = ClassInfo.get(mapValueClass);
+		
 		Map<String, Base> ret = new TreeMap<>();
 		
 		for(String childKey: jsonObject.keySet()) {
@@ -381,7 +383,7 @@ public class Base {
 			case OBJECT:
 			{
 				JsonObject jsonObjectValue = jsonObject.getJsonObject(childKey);
-				Base value = (Base)mapValueClass.getDeclaredConstructor(JsonObject.class).newInstance(jsonObjectValue);
+				Base value = classInfo.construcor.newInstance(jsonObjectValue);
 
 				ret.put(childKey, value);
 			}
@@ -398,7 +400,8 @@ public class Base {
 		Class<?> fieldType = fieldInfo.field.getType();
 		
 		if (Base.class.isAssignableFrom(fieldType)) {
-			Base child = (Base)fieldType.getDeclaredConstructor(JsonObject.class).newInstance(jsonObject);
+			ClassInfo classInfo = ClassInfo.get(fieldType);
+			Base child = classInfo.construcor.newInstance(jsonObject);
 //			logger.info("child {}", child.toString());
 			
 			fieldInfo.field.set(this, child);
@@ -503,6 +506,8 @@ public class Base {
 
 
 	public static <E extends Base> E getObject(String url, Class<E> clazz) {
+		ClassInfo classInfo = ClassInfo.get(clazz);
+
 		HttpUtil.Result result = HttpUtil.download(url);
 		logger.info("tokenUsed {}", result.tokenUsed);
 		String jsonString = result.result;
@@ -515,9 +520,10 @@ public class Base {
 		try (JsonReader reader = Json.createReader(new StringReader(jsonString))) {
 			// Assume result is only one object
 			JsonObject arg = reader.readObject();
-			E ret = clazz.getDeclaredConstructor(JsonObject.class).newInstance(arg);
+			@SuppressWarnings("unchecked")
+			E ret = (E)classInfo.construcor.newInstance(arg);
 			return ret;
-		} catch (IllegalAccessException | InstantiationException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+		} catch (IllegalAccessException | InstantiationException | IllegalArgumentException | InvocationTargetException | SecurityException e) {
 			String exceptionName = e.getClass().getSimpleName();
 			logger.error("{} {}", exceptionName, e);
 			throw new UnexpectedException(exceptionName, e);
@@ -525,6 +531,8 @@ public class Base {
 	}
 
 	public static <E extends Base> List<E> getArray(String url, Class<E> clazz) {
+		ClassInfo classInfo = ClassInfo.get(clazz);
+
 		HttpUtil.Result result = HttpUtil.download(url);
 		logger.info("tokenUsed {}", result.tokenUsed);
 		String jsonString = result.result;
@@ -544,7 +552,9 @@ public class Base {
 			
 			for(int i = 0; i < jsonArraySize; i++) {
 				JsonObject arg = jsonArray.getJsonObject(i);
-				ret[i]  = clazz.getDeclaredConstructor(JsonObject.class).newInstance(arg);
+				@SuppressWarnings("unchecked")
+				E e = (E)classInfo.construcor.newInstance(arg);
+				ret[i] = e;
 			}
 			
 			// Sort array
@@ -552,7 +562,7 @@ public class Base {
 			
 			// Return as list
 			return Arrays.asList(ret);
-		} catch (IllegalAccessException | InstantiationException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+		} catch (IllegalAccessException | InstantiationException | IllegalArgumentException | InvocationTargetException | SecurityException e) {
 			String exceptionName = e.getClass().getSimpleName();
 			logger.error("{} {}", exceptionName, e);
 			throw new UnexpectedException(exceptionName, e);
@@ -588,8 +598,8 @@ public class Base {
 	
 	
 	// CSV Save and Load
-	public static <E extends Base> void saveCSV(List<E> dataList) {
-		E o = dataList.get(0);
+	public static void saveCSV(List<Base> dataList) {
+		Base o = dataList.get(0);
 		ClassInfo classInfo = ClassInfo.get(o);
 		
 		if (classInfo.path == null) {
@@ -602,7 +612,7 @@ public class Base {
 
 		CSVUtil.saveWithHeader(dataList, path);
 	}
-	public static <E extends Base> List<E> loadCSV(Class<E> clazz) {
+	public static List<Base> loadCSV(Class<Base> clazz) {
 		ClassInfo classInfo = ClassInfo.get(clazz);
 		
 		if (classInfo.path == null) {
