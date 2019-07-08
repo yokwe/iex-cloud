@@ -3,6 +3,9 @@ package yokwe.iex.util;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -45,15 +48,36 @@ public class HttpUtil {
 		httpClient = httpClientBuilder.build();
 	}
 	
+	public static final String PATH_SAVE_DIR = "tmp/http";
+	
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyMMdd-HHmmss-SSS");
+	
+	private static boolean saveResult = false;
+	public static void enableSaveResult(boolean newValue) {
+		saveResult = newValue;
+		logger.info("enableSaveResult {}", newValue);
+	}
+	
 	public static class Result {
 		public final String url;
 		public final String result;
 		public final int    tokenUsed;
+		public final String timestamp;
+		public final String path;
 		
 		private Result (String url, String result, int tokenUsed) {
 			this.url       = url;
 			this.result    = result;
 			this.tokenUsed = tokenUsed;
+			
+			timestamp = LocalDateTime.now(ZoneId.systemDefault()).format(DATE_TIME_FORMATTER);
+			if (saveResult) {
+				path = String.format("%s/%s", PATH_SAVE_DIR, timestamp);
+				
+				FileUtil.write(path, result);
+			} else {
+				path = null;
+			}
 		}
 	}
 
@@ -112,8 +136,12 @@ public class HttpUtil {
 					}
 					
 					String result = getContent(response.getEntity(), encoding);
+					Result ret = new Result(url, result, tokenUsed);
 					
-					return new Result(url, result, tokenUsed);
+					if (ret.path != null) {
+						logger.info(String.format("%s %7d %s", ret.timestamp, ret.result.length(), ret.url));
+					}
+					return ret; 
 				}
 				
 				// Other code
