@@ -29,12 +29,6 @@
 		<!-- compile -->
 		<javac srcdir="${dir.src}" destdir="${dir.build.bin}" classpathref="ext.jar" includeAntRuntime="false" 
 			debug="true" debuglevel="lines,vars,source" />
-		<!-- copy resource file -->
-		<copy todir="${dir.build.bin}">
-			<fileset dir="${dir.src}">
-				<exclude name="**/*.java" />
-			</fileset>
-		</copy>
 		<!-- make jar -->
 		<jar destfile="${jar.iex-cloud}" basedir="${dir.build.bin}" />
 	</target>
