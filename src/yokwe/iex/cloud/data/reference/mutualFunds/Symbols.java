@@ -48,7 +48,7 @@ public class Symbols extends Base implements Comparable<Symbols> {
 		String base = context.getBaseURL(METHOD);
 		String url  = context.getURL(base, Format.CSV);
 		
-		List<Symbols> ret = getCSV(url, Symbols.class);
+		List<Symbols> ret = getCSV(context, url, Symbols.class);
 		return ret;
 	}
 }

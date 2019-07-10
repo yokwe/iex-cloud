@@ -77,7 +77,7 @@ public class Chart extends Base implements Comparable<Chart> {
 		String base = context.getBaseURL(String.format(METHOD, encodeString(symbol), range.value));
 		String url  = context.getURL(base, Format.CSV);
 
-		List<Chart> ret = getCSV(url, Chart.class);
+		List<Chart> ret = getCSV(context, url, Chart.class);
 		return ret;
 	}
 }

@@ -79,7 +79,7 @@ public class Dividends extends Base implements Comparable<Dividends> {
 		String base = context.getBaseURL(String.format(METHOD, encodeString(symbol), range.value));
 		String url  = context.getURL(base, Format.CSV);
 
-		List<Dividends> ret = getCSV(url, Dividends.class);
+		List<Dividends> ret = getCSV(context, url, Dividends.class);
 		return ret;
 	}
 }

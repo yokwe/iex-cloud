@@ -80,7 +80,7 @@ public class OHLC extends Base implements Comparable<OHLC> {
 		String base = context.getBaseURL(String.format(METHOD, encodeString(symbol)));
 		String url  = context.getURL(base, Format.JSON);
 
-		OHLC ret = getObject(url, OHLC.class);
+		OHLC ret = getObject(context, url, OHLC.class);
 		return ret;
 	}
 	
@@ -103,7 +103,7 @@ public class OHLC extends Base implements Comparable<OHLC> {
 		String base = context.getBaseURL(METHOD_MARKET);
 		String url  = context.getURL(base, Format.JSON, paramMap);
 
-		List<OHLC> ret = getArray(url, OHLC.class);
+		List<OHLC> ret = getArray(context, url, OHLC.class);
 		return ret;
 	}
 }

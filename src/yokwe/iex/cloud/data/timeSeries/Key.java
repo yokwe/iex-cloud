@@ -103,7 +103,7 @@ public class Key extends Base {
 		String base = context.getBaseURL(METHOD);
 		String url  = context.getURL(base);
 
-		List<Key> ret = getArray(url, Key.class);
+		List<Key> ret = getArray(context, url, Key.class);
 		return ret;
 	}
 }

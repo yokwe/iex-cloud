@@ -110,7 +110,7 @@ public class ChartDate extends Base implements Comparable<ChartDate> {
 		String base = context.getBaseURL(String.format(METHOD, encodeString(symbol), date));
 		String url  = context.getURL(base, Format.CSV, paramMap);
 
-		List<ChartDate> ret = getCSV(url, ChartDate.class);
+		List<ChartDate> ret = getCSV(context, url, ChartDate.class);
 		// Sanity check
 		if (ret.size() != 1) {
 			logger.error("ret.size() != 1  {}", ret.size());

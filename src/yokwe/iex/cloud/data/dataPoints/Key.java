@@ -37,7 +37,7 @@ public class Key extends Base implements Comparable<Key>{
 		String base = context.getBaseURL(METHOD);
 		String url  = context.getURL(String.format("%s/%s", base, encodeString(symbol)), Format.CSV);
 		
-		List<Key> ret = getCSV(url, Key.class);
+		List<Key> ret = getCSV(context, url, Key.class);
 		return ret;
 	}
 }

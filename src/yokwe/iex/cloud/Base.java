@@ -505,17 +505,19 @@ public class Base {
 
 
 
-	public static <E extends Base> E getObject(String url, Class<E> clazz) {
+	public static <E extends Base> E getObject(Context context, String url, Class<E> clazz) {
 		ClassInfo classInfo = ClassInfo.get(clazz);
 
 		HttpUtil.Result result = HttpUtil.download(url);
-		String jsonString = result.result;
-		if (jsonString == null) {
-			logger.error("jsonString == null");
-			throw new UnexpectedException("jsonString == null");
+		if (result.result == null) {
+			logger.error("result.result == null");
+			throw new UnexpectedException("result.result == null");
 		}
-//		logger.info("jsonString = {}", jsonString);
+		context.setTokenUsed(result.tokenUsed);
 		
+		String jsonString = result.result;
+//		logger.info("jsonString = {}", jsonString);
+
 		try (JsonReader reader = Json.createReader(new StringReader(jsonString))) {
 			// Assume result is only one object
 			JsonObject arg = reader.readObject();
@@ -529,16 +531,17 @@ public class Base {
 		}
 	}
 
-	public static <E extends Base> List<E> getArray(String url, Class<E> clazz) {
+	public static <E extends Base> List<E> getArray(Context context, String url, Class<E> clazz) {
 		ClassInfo classInfo = ClassInfo.get(clazz);
 
 		HttpUtil.Result result = HttpUtil.download(url);
-		logger.info("tokenUsed {}", result.tokenUsed);
-		String jsonString = result.result;
-		if (jsonString == null) {
-			logger.error("jsonString == null");
-			throw new UnexpectedException("jsonString == null");
+		if (result.result == null) {
+			logger.error("result.result == null");
+			throw new UnexpectedException("result.result == null");
 		}
+		context.setTokenUsed(result.tokenUsed);
+		
+		String jsonString = result.result;
 //		logger.info("jsonString = {}", jsonString);
 		
 		try (JsonReader reader = Json.createReader(new StringReader(jsonString))) {
@@ -569,9 +572,14 @@ public class Base {
 	}
 
 	// for symbols
-	public static <E extends Base> List<E> getCSV(String url, Class<E> clazz) {
+	public static <E extends Base> List<E> getCSV(Context context, String url, Class<E> clazz) {
 		HttpUtil.Result result = HttpUtil.download(url);
-		logger.info("tokenUsed {}", result.tokenUsed);
+		if (result.result == null) {
+			logger.error("result.result == null");
+			throw new UnexpectedException("result.result == null");
+		}
+		context.setTokenUsed(result.tokenUsed);
+
 		String csvString = result.result;
 		if (csvString == null) {
 			logger.error("csvString == null");

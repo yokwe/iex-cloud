@@ -10,19 +10,34 @@ import yokwe.iex.cloud.Base.Format;
 public class Context {
 	static final org.slf4j.Logger logger = LoggerFactory.getLogger(Context.class);
 	
-	public final Type   type;
+	public final Type    type;
 	public final Version version;
 	public final String  url;
+	private      int     tokenUsed;
+	private      int     tokenUsedTotal;
 	
 	public Context(Type type, Version version) {
-		this.type    = type;
-		this.version = version;
-		this.url = String.format("%s/%s", type.url, version.url);
+		this.type           = type;
+		this.version        = version;
+		this.url            = String.format("%s/%s", type.url, version.url);
+		this.tokenUsed      = 0;
+		this.tokenUsedTotal = 0;
 	}
 	
 	@Override
 	public String toString() {
 		return String.format("[%s %s %s]", type.toString(), version.toString(), url);
+	}
+	
+	public void setTokenUsed(int value) {
+		tokenUsed       = value;
+		tokenUsedTotal += value;
+	}
+	public int getTokenUsed() {
+		return tokenUsed;
+	}
+	public int getTokenUsedTotal() {
+		return tokenUsedTotal;
 	}
 	
 	public String getBaseURL(String endPoint) {

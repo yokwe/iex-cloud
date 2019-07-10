@@ -42,7 +42,7 @@ public class Exchanges extends Base implements Comparable<Exchanges> {
 		String base = context.getBaseURL(METHOD);
 		String url  = context.getURL(base, Format.CSV);
 		
-		List<Exchanges> ret = getCSV(url, Exchanges.class);
+		List<Exchanges> ret = getCSV(context, url, Exchanges.class);
 		return ret;
 	}
 }

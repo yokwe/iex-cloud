@@ -30,7 +30,7 @@ public class Status extends Base {
 	
 	public static Status getInstance(Context context) {
 		String base = context.getBaseURL(METHOD);
-		Status ret = getObject(base, Status.class);
+		Status ret = getObject(context, base, Status.class);
 		return ret;
 	}
 }

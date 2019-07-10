@@ -71,7 +71,7 @@ public class Usage extends Base {
 		String base = context.getBaseURL(METHOD);
 		String url  = context.getURL(base);
 		
-		Usage  ret = getObject(url, Usage.class);
+		Usage  ret = getObject(context, url, Usage.class);
 		return ret;
 	}
 }

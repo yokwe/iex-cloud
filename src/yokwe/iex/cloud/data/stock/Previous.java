@@ -86,7 +86,7 @@ public class Previous extends Base implements Comparable<Previous> {
 		String base = context.getBaseURL(String.format(METHOD, encodeString(symbol)));
 		String url  = context.getURL(base, Format.JSON);
 
-		Previous ret = getObject(url, Previous.class);
+		Previous ret = getObject(context, url, Previous.class);
 		return ret;
 	}
 	
@@ -109,7 +109,7 @@ public class Previous extends Base implements Comparable<Previous> {
 		String base = context.getBaseURL(METHOD_MARKET);
 		String url  = context.getURL(base, Format.JSON, paramMap);
 
-		List<Previous> ret = getArray(url, Previous.class);
+		List<Previous> ret = getArray(context, url, Previous.class);
 		return ret;
 	}
 

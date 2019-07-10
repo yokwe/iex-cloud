@@ -41,7 +41,7 @@ public class Metadata extends Base {
 		String base = context.getBaseURL(METHOD);
 		String url  = context.getURL(base);
 		
-		Metadata ret = getObject(url, Metadata.class);
+		Metadata ret = getObject(context, url, Metadata.class);
 		return ret;
 	}
 }
