@@ -38,8 +38,6 @@ public class Base {
 	
 	public static final LocalDateTime NULL_LOCAL_DATE_TIME = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
 
-	public static final String PATH_DIR = "tmp/iex";
-
 	@Override
 	public String toString() {
 		try {
@@ -600,36 +598,5 @@ public class Base {
 		
 		// Return as list
 		return Arrays.asList(ret);
-	}
-
-	
-	
-	// CSV Save and Load
-	public static <E extends Base> void saveCSV(List<E> dataList) {
-		E o = dataList.get(0);
-		ClassInfo classInfo = ClassInfo.get(o);
-		
-		if (classInfo.path == null) {
-			logger.error("classInfo.path == null  {}", classInfo);
-			throw new UnexpectedException("classInfo.path == null");
-		}
-		
-		String path = String.format("%s%s", PATH_DIR, classInfo.path);
-//		logger.info("path = {}", path);
-
-		CSVUtil.saveWithHeader(dataList, path);
-	}
-	public static <E extends Base> List<E> loadCSV(Class<E> clazz) {
-		ClassInfo classInfo = ClassInfo.get(clazz);
-		
-		if (classInfo.path == null) {
-			logger.error("classInfo.path == null  {}", classInfo);
-			throw new UnexpectedException("classInfo.path == null");
-		}
-		
-		String path = String.format("%s%s", PATH_DIR, classInfo.path);
-//		logger.info("path = {}", path);
-		
-		return CSVUtil.loadWithHeader(path, clazz);
 	}
 }

@@ -13,9 +13,9 @@ public class Token {
 	public static final Token PRODUCTION;
 	public static final Token SANDBOX;
 	
-	static {
-		final String PATH_TOKEN = "tmp/iex/token";
+	public static final String PATH_TOKEN_FILE = "tmp/iex/token";
 
+	static {
 		final String PREFIX_COMMENT            = "#";
 		final String PREFIX_PRODUCTION_PUBLISH = "pk_";
 		final String PREFIX_PRODUCTION_SECRET  = "sk_";
@@ -27,7 +27,7 @@ public class Token {
 		String sandboxPublish    = null;
 		String sandobxSecret     = null;
 		
-		String content = FileUtil.read(PATH_TOKEN);
+		String content = FileUtil.read(PATH_TOKEN_FILE);
 		for(String line: content.split("[\\n\\r]+")) {
 			line = line.trim();
 			if (line.length() == 0) continue;

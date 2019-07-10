@@ -10,7 +10,6 @@ import yokwe.iex.cloud.Context;
 public class Exchanges extends Base implements Comparable<Exchanges> {
 	public static final int    DATA_WEIGHT = 1; // 1 per call
 	public static final String METHOD      = "/ref-data/exchanges";
-	public static final String PATH        = "/exchanges.csv";
 
 	// exchange,region,description,mic,exchangeSuffix
 	public String exchange;

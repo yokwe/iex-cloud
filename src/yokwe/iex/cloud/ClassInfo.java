@@ -87,7 +87,6 @@ public class ClassInfo {
 
 	public final String            clazzName;
 	public final String            method;
-	public final String            path;
 	public final FieldInfo[]       fieldInfos;
 	public final int               fieldSize;
 	public final Constructor<Base> construcor;
@@ -142,7 +141,6 @@ public class ClassInfo {
 			
 			this.clazzName  = clazz.getName();
 			this.method     = getStaticStringFieldValue(clazz, "METHOD");
-			this.path       = getStaticStringFieldValue(clazz, "PATH");
 			this.fieldInfos = fieldInfos;
 			this.fieldSize  = fieldSize;
 			this.construcor = clazz.getDeclaredConstructor(JsonObject.class);
@@ -155,6 +153,6 @@ public class ClassInfo {
 	
 	@Override
 	public String toString() {
-		return String.format("%s  %s  %s  %s", clazzName, method, path, Arrays.asList(this.fieldInfos));
+		return String.format("%s  %s  %s", clazzName, method, Arrays.asList(this.fieldInfos));
 	}
 }

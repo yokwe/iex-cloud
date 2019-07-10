@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.slf4j.LoggerFactory;
 
-import yokwe.iex.cloud.Base;
 import yokwe.iex.cloud.Context;
 import yokwe.iex.cloud.Type;
 import yokwe.iex.cloud.Version;
@@ -42,16 +41,12 @@ public class T001 {
 		{
 			List<yokwe.iex.cloud.data.reference.iex.Symbols> iexSymbols = yokwe.iex.cloud.data.reference.iex.Symbols.getInstance(context);
 			logger.info("iex csv symbols = {}", iexSymbols.size());
-			
-			Base.saveCSV(iexSymbols);
 		}
 
 		{
           // 100 per call
 			List<yokwe.iex.cloud.data.reference.Symbols> symbols = yokwe.iex.cloud.data.reference.Symbols.getInstance(context);
 			logger.info("symbols = {}", symbols.size());
-			
-			Base.saveCSV(symbols);
 		}
 
 //		{

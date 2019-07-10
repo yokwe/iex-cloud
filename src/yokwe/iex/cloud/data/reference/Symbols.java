@@ -10,7 +10,6 @@ import yokwe.iex.cloud.Context;
 public class Symbols extends Base implements Comparable<Symbols> {	
 	public static final int    DATA_WEIGHT = 100; // 100 per call
 	public static final String METHOD      = "/ref-data/symbols";
-	public static final String PATH        = "/symbols.csv";
 
 	// symbol,exchange,name,date,type,iexId,region,currency,isEnabled
 	public String  symbol;
