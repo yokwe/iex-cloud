@@ -569,6 +569,50 @@ public class Base {
 		}
 	}
 
+	public static <E extends Base> List<List<E>> getArrayArray(Context context, String url, Class<E> clazz) {
+		ClassInfo classInfo = ClassInfo.get(clazz);
+
+		HttpUtil.Result result = HttpUtil.download(url);
+		if (result.result == null) {
+			logger.error("result.result == null");
+			throw new UnexpectedException("result.result == null");
+		}
+		context.setTokenUsed(result.tokenUsed);
+		
+		String jsonString = result.result;
+//		logger.info("jsonString = {}", jsonString);
+		
+		List<List<E>> ret = new ArrayList<>();
+		
+		try (JsonReader reader = Json.createReader(new StringReader(jsonString))) {
+			// Assume result is array in array
+			JsonArray jsonArray     = reader.readArray();
+			int       jsonArraySize = jsonArray.size();
+			
+			for(int i = 0; i < jsonArraySize; i++) {
+				JsonArray jsonArray2     = jsonArray.getJsonArray(i);
+				int       jsonArraySize2 = jsonArray2.size();
+
+				List<E> list = new ArrayList<>();
+				
+				for(int j = 0; j < jsonArraySize2; j++) {
+					JsonObject arg = jsonArray2.getJsonObject(j);
+					@SuppressWarnings("unchecked")
+					E e = (E)classInfo.construcor.newInstance(arg);
+					list.add(e);
+				}
+				
+				ret.add(list);
+			}
+			
+			return ret;
+		} catch (IllegalAccessException | InstantiationException | IllegalArgumentException | InvocationTargetException | SecurityException e) {
+			String exceptionName = e.getClass().getSimpleName();
+			logger.error("{} {}", exceptionName, e);
+			throw new UnexpectedException(exceptionName, e);
+		}
+	}
+
 	// for symbols
 	public static <E extends Base> List<E> getCSV(Context context, String url, Class<E> clazz) {
 		HttpUtil.Result result = HttpUtil.download(url);
