@@ -110,6 +110,17 @@ public class T001 {
 //				logger.info("{}", dividend);
 //			}
 //		}
+//		{
+//		// 10 per return record
+//			Map<String, List<yokwe.iex.cloud.data.stock.Dividends>> mapList = yokwe.iex.cloud.data.stock.Dividends.getInstance(context, Range.Y1, "ibm", "amzn");
+//			logger.info("mapList = {}", mapList.size());
+//			for(Map.Entry<String, List<yokwe.iex.cloud.data.stock.Dividends>> entry: mapList.entrySet()) {
+//				logger.info("{}  {}", entry.getKey(), entry.getValue().size());
+//				for(yokwe.iex.cloud.data.stock.Dividends dividends: entry.getValue()) {
+//					logger.info("  {}", dividends);
+//				}
+//			}
+//		}
 
 //		{
 //		// 2 per call
