@@ -509,7 +509,6 @@ public class Base {
 		ClassInfo classInfo = ClassInfo.get(clazz);
 
 		HttpUtil.Result result = HttpUtil.download(url);
-		logger.info("tokenUsed {}", result.tokenUsed);
 		String jsonString = result.result;
 		if (jsonString == null) {
 			logger.error("jsonString == null");

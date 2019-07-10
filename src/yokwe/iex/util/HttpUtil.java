@@ -139,7 +139,7 @@ public class HttpUtil {
 					Result ret = new Result(url, result, tokenUsed);
 					
 					if (ret.path != null) {
-						logger.info(String.format("%s %7d %s", ret.timestamp, ret.result.length(), ret.url));
+						logger.info(String.format("%s %4d %7d %s", ret.timestamp, ret.tokenUsed, ret.result.length(), ret.url));
 					}
 					return ret; 
 				}
