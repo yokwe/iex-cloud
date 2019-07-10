@@ -1,15 +1,21 @@
 package yokwe.iex.cloud.data.stock;
 
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.json.JsonObject;
 
+import org.slf4j.LoggerFactory;
+
+import yokwe.iex.UnexpectedException;
 import yokwe.iex.cloud.Base;
 import yokwe.iex.cloud.Context;
 
 public class Dividends extends Base implements Comparable<Dividends> {	
+	static final org.slf4j.Logger logger = LoggerFactory.getLogger(Dividends.class);
+	
 	public static final int    DATA_WEIGHT = 10; // 10 per return records
-	public static final String METHOD      = "/stock/%s/dividends/%s";
 	
 //	[
 //	    {
@@ -75,11 +81,42 @@ public class Dividends extends Base implements Comparable<Dividends> {
 		return this.exDate.compareTo(that.exDate);
 	}
 	
-	public static List<Dividends> getInstance(Context context, String symbol, Range range) {
+	public static final String METHOD = "/stock/%s/dividends/%s";
+	public static List<Dividends> getInstance(Context context, Range range, String symbol) {
 		String base = context.getBaseURL(String.format(METHOD, encodeString(symbol), range.value));
 		String url  = context.getURL(base, Format.CSV);
 
 		List<Dividends> ret = getCSV(context, url, Dividends.class);
 		return ret;
 	}
+	
+	public static final String METHOD_MARKET = "/stock/market/dividends";
+	public static Map<String, List<Dividends>> getInstance(Context context, Range range, String... symbols) {
+		// Sanity check
+		if (symbols.length == 0) {
+			logger.error("symbols.length == 0");
+			throw new UnexpectedException("symbols.length == 0");
+		}
+				
+		Map<String, String> paramMap = new TreeMap<>();
+		paramMap.put("symbols", String.join(",", symbols));
+		paramMap.put("range",   range.value);
+		
+		String base = context.getBaseURL(METHOD_MARKET);
+		String url  = context.getURL(base, Format.JSON, paramMap);
+
+		List<List<Dividends>> result = getArrayArray(context, url, Dividends.class);
+		if (result.size() != symbols.length) {
+			logger.error("result.size() != symbols.length  {}  {}", result.size(), symbols.length);
+			throw new UnexpectedException("result.size() != symbols.length");
+		}
+		
+		Map<String, List<Dividends>> ret = new TreeMap<>();
+		for(int i = 0; i < symbols.length; i++) {
+			ret.put(symbols[i], result.get(i));
+		}
+		
+		return ret;
+	}
+
 }
