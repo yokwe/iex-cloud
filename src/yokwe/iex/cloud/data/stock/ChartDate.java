@@ -17,10 +17,7 @@ public class ChartDate extends Base implements Comparable<ChartDate> {
 	static final org.slf4j.Logger logger = LoggerFactory.getLogger(ChartDate.class);
 
 	public static final int    DATA_WEIGHT = 2; // 2 per return records
-	public static final String METHOD      = "/stock/%s/chart/date/%s";
 	
-// https://cloud.iexapis.com/v1/stock/TRTN/chart/date/20190705?chartByDay=true&token=XXX&format=csv
-
 //	[
 //	    {
 //	        "date": "2019-07-05",
@@ -43,7 +40,7 @@ public class ChartDate extends Base implements Comparable<ChartDate> {
 	
 //	date,uClose,uOpen,uHigh,uLow,uVolume,close,open,high,low,volume,change,changePercent,label,changeOverTime
 //	2019-07-05,33.01,32.72,33.15,32.62,223015,33.01,32.72,33.15,32.62,223015,0,0,Jul 5,0
-
+		
 	public String date;
 	
 	public double uClose;
@@ -98,15 +95,17 @@ public class ChartDate extends Base implements Comparable<ChartDate> {
 		paramMap.put("chartByDay", "true");
 	}
 	
-	public static ChartDate getInstance(Context context, String symbol, LocalDate date) {
+	// https://cloud.iexapis.com/v1/stock/TRTN/chart/date/20190705?chartByDay=true&token=XX&format=csv
+	public static final String METHOD = "/stock/%s/chart/date/%s";
+	public static ChartDate getInstance(Context context, LocalDate date, String symbol) {
 		int y = date.getYear();
 		int m = date.getMonthValue();
 		int d = date.getDayOfMonth();
 		
 		String dateString = String.format("%d%02d%02d", y, m, d);
-		return getInstance(context, symbol, dateString);
+		return getInstance(context, dateString, symbol);
 	}
-	public static ChartDate getInstance(Context context, String symbol, String date) {
+	public static ChartDate getInstance(Context context, String date, String symbol) {
 		String base = context.getBaseURL(String.format(METHOD, encodeString(symbol), date));
 		String url  = context.getURL(base, Format.CSV, paramMap);
 
@@ -119,4 +118,43 @@ public class ChartDate extends Base implements Comparable<ChartDate> {
 		
 		return ret.get(0);
 	}
+	
+	// https://sandbox.iexapis.com/v1/stock/market/chart/date/20190705?chartByDay=true&symbols=ibm,trtn&token=XX&format=json
+	public static final String METHOD_MARKET = "/stock/market/chart/date/%s";
+	public static Map<String, List<ChartDate>> getInstance(Context context, LocalDate date, String... symbols) {
+		int y = date.getYear();
+		int m = date.getMonthValue();
+		int d = date.getDayOfMonth();
+		
+		String dateString = String.format("%d%02d%02d", y, m, d);
+		return getInstance(context, dateString, symbols);
+	}
+	public static Map<String, List<ChartDate>> getInstance(Context context, String date, String... symbols) {
+		// Sanity check
+		if (symbols.length == 0) {
+			logger.error("symbols.length == 0");
+			throw new UnexpectedException("symbols.length == 0");
+		}
+				
+		Map<String, String> paramMap = new TreeMap<>();
+		paramMap.put("symbols",    String.join(",", symbols));
+		paramMap.put("chartByDay", "true");
+		
+		String base = context.getBaseURL(String.format(METHOD_MARKET, date));
+		String url  = context.getURL(base, Format.JSON, paramMap);
+
+		List<List<ChartDate>> result = getArrayArray(context, url, ChartDate.class);
+		if (result.size() != symbols.length) {
+			logger.error("result.size() != symbols.length  {}  {}", result.size(), symbols.length);
+			throw new UnexpectedException("result.size() != symbols.length");
+		}
+		
+		Map<String, List<ChartDate>> ret = new TreeMap<>();
+		for(int i = 0; i < symbols.length; i++) {
+			ret.put(symbols[i], result.get(i));
+		}
+		
+		return ret;
+	}
+
 }
