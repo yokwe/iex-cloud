@@ -470,6 +470,21 @@ public class Base {
 			this.value = value;
 		}
 	}
+	private static Map<String, Range> rangeMap = new TreeMap<>();
+	static {
+		for(Range type: Range.class.getEnumConstants()) {
+			rangeMap.put(type.name(), type);
+		}
+	}
+	public static Range toRange(String value) {
+		if (rangeMap.containsKey(value)) {
+			return rangeMap.get(value);
+		} else {
+			logger.error("Unexpected value  {}", value);
+			throw new UnexpectedException("Unexpected value");
+		}
+	}
+
 
 	// Format
 	public enum Format {
