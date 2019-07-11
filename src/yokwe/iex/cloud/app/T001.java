@@ -144,7 +144,19 @@ public class T001 {
 //			yokwe.iex.cloud.data.stock.ChartDate chartDate = yokwe.iex.cloud.data.stock.ChartDate.getInstance(context, "trtn", "20190705");
 //			logger.info("chartDate = {}", chartDate);
 //		}
-		
+
+//		{
+//		// 2 per return record
+//			Map<String, List<yokwe.iex.cloud.data.stock.ChartDate>> mapList = yokwe.iex.cloud.data.stock.ChartDate.getInstance(context, "20190705", "ibm", "amzn");
+//			logger.info("mapList = {}", mapList.size());
+//			for(Map.Entry<String, List<yokwe.iex.cloud.data.stock.ChartDate>> entry: mapList.entrySet()) {
+//				logger.info("{}  {}", entry.getKey(), entry.getValue().size());
+//				for(yokwe.iex.cloud.data.stock.ChartDate dividends: entry.getValue()) {
+//					logger.info("  {}", dividends);
+//				}
+//			}
+//		}
+
 //		{
 //		// 10 per returned record
 //			List<yokwe.iex.cloud.data.stock.Chart> chartList = yokwe.iex.cloud.data.stock.Chart.getInstance(context, "trtn", Range.D5);
