@@ -2,7 +2,6 @@ package yokwe.iex.util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -139,14 +138,15 @@ public class CSVUtil {
 	}
 	
 	public static <E> List<E> load(String path, Class<E> clazz, CSVFormat csvFormat) {
-		Reader reader;
 		try {
-			reader = new BufferedReader(new FileReader(path), BUFFER_SIZE);
+			Reader reader = new BufferedReader(new FileReader(path), BUFFER_SIZE);
 			return load(reader, clazz, csvFormat);
 		} catch (FileNotFoundException e) {
-			String exceptionName = e.getClass().getSimpleName();
-			logger.error("{} {}", exceptionName, e);
-			throw new UnexpectedException(exceptionName, e);
+//			String exceptionName = e.getClass().getSimpleName();
+//			logger.error("{} {}", exceptionName, e);
+//			throw new UnexpectedException(exceptionName, e);
+			logger.warn("FileNotFoundException  {}", path);
+			return null;
 		}
 	}
 	
@@ -318,24 +318,6 @@ public class CSVUtil {
 		ClassInfo classInfo = ClassInfo.get(dataList.get(0).getClass());
 		
 		Object[] values = new Object[classInfo.fieldInfos.length];
-
-		// Create parent dirs and file if not exists.
-		{
-			File file = new File(path);
-			
-			File fileParent = file.getParentFile();
-			if (!fileParent.exists()) {
-				fileParent.mkdirs();
-			}
-			if (!file.exists()) {
-				try {
-					file.createNewFile();
-				} catch (IOException e) {
-					logger.error("IOException {}", e.toString());
-					throw new UnexpectedException("IOException");
-				}
-			}
-		}
 
 		try (CSVPrinter csvPrint = new CSVPrinter(new BufferedWriter(new FileWriter(path), BUFFER_SIZE), csvFormat)) {
 			for(E entry: dataList) {
