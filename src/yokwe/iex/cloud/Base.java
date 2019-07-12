@@ -469,22 +469,35 @@ public class Base {
 		Range(String value) {
 			this.value = value;
 		}
-	}
-	private static Map<String, Range> rangeMap = new TreeMap<>();
-	static {
-		for(Range type: Range.class.getEnumConstants()) {
-			rangeMap.put(type.name(), type);
+		
+		private static Map<String, Range> rangeMap = new TreeMap<>();
+		static {
+			for(Range type: Range.class.getEnumConstants()) {
+				rangeMap.put(type.name(), type);
+			}
+		}
+		public static Range toRange(String value) {
+			if (rangeMap.containsKey(value)) {
+				return rangeMap.get(value);
+			} else {
+				logger.error("Unexpected value  {}", value);
+				throw new UnexpectedException("Unexpected value");
+			}
+		}
+		public static Range getFromProperty(String propertyNam) {
+			String stringValue = System.getProperty(propertyNam);
+			if (stringValue != null) {
+				return toRange(stringValue);
+			} else {
+				logger.error("No property  {}", propertyNam);
+				throw new UnexpectedException("No property");
+			}
+		}
+		public static Range getFromProperty(String propertyNam, String defaultValue) {
+			String stringValue = System.getProperty(propertyNam, defaultValue);
+			return toRange(stringValue);
 		}
 	}
-	public static Range toRange(String value) {
-		if (rangeMap.containsKey(value)) {
-			return rangeMap.get(value);
-		} else {
-			logger.error("Unexpected value  {}", value);
-			throw new UnexpectedException("Unexpected value");
-		}
-	}
-
 
 	// Format
 	public enum Format {
