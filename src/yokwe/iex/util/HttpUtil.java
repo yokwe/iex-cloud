@@ -50,7 +50,7 @@ public class HttpUtil {
 	
 	public static final String PATH_SAVE_DIR = "tmp/http";
 	
-	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyMMdd-HHmmss-SSS");
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS");
 	
 	private static boolean saveResult = false;
 	public static void enableSaveResult(boolean newValue) {
