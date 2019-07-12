@@ -48,14 +48,14 @@ public class HttpUtil {
 		httpClient = httpClientBuilder.build();
 	}
 	
-	public static final String PATH_SAVE_DIR = "tmp/http";
+	public static final String PATH_TRACE_DIR = "tmp/http";
 	
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss-SSS");
 	
-	private static boolean saveResult = false;
-	public static void enableSaveResult(boolean newValue) {
-		saveResult = newValue;
-		logger.info("enableSaveResult {}", newValue);
+	private static boolean trace = false;
+	public static void enableTrace(boolean newValue) {
+		trace = newValue;
+		logger.info("trace {}", trace);
 	}
 	
 	public static class Result {
@@ -71,8 +71,8 @@ public class HttpUtil {
 			this.tokenUsed = tokenUsed;
 			
 			timestamp = LocalDateTime.now(ZoneId.systemDefault()).format(DATE_TIME_FORMATTER);
-			if (saveResult) {
-				path = String.format("%s/%s", PATH_SAVE_DIR, timestamp);
+			if (trace) {
+				path = String.format("%s/%s", PATH_TRACE_DIR, timestamp);
 				
 				FileUtil.write(path, result);
 			} else {
