@@ -18,7 +18,7 @@ public class T001 {
 	public static void main(String[] args) {
 		logger.info("START");
 		
-		HttpUtil.enableSaveResult(true);
+		HttpUtil.enableTrace(true);
 		
 		Context context = new Context(Type.SANDBOX, Version.V1);
 		logger.info("context = {}", context);
