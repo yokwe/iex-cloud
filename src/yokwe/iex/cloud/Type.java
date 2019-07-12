@@ -41,4 +41,17 @@ public enum Type {
 			throw new UnexpectedException("Unexpected value");
 		}
 	}
+	public static Type getFromProperty(String propertyName) {
+		String stringValue = System.getProperty(propertyName);
+		if (stringValue != null) {
+			return toType(stringValue);
+		} else {
+			logger.error("No property  {}", propertyName);
+			throw new UnexpectedException("No property");
+		}
+	}
+	public static Type getFromProperty(String propertyName, String defaultValue) {
+		String stringValue = System.getProperty(propertyName, defaultValue);
+		return toType(stringValue);
+	}
 }

@@ -41,4 +41,17 @@ public enum Version {
 			throw new UnexpectedException("Unexpected value");
 		}
 	}
+	public static Version getFromProperty(String propertyNam) {
+		String stringValue = System.getProperty(propertyNam);
+		if (stringValue != null) {
+			return toVersion(stringValue);
+		} else {
+			logger.error("No property  {}", propertyNam);
+			throw new UnexpectedException("No property");
+		}
+	}
+	public static Version getFromProperty(String propertyNam, String defaultValue) {
+		String stringValue = System.getProperty(propertyNam, defaultValue);
+		return toVersion(stringValue);
+	}
 }
