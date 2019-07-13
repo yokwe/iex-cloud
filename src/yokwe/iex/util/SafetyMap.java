@@ -39,4 +39,7 @@ public final class SafetyMap<K, V> {
 	public Set<K> keySet() {
 		return map.keySet();
 	}
+	public int size() {
+		return map.size();
+	}
 }
