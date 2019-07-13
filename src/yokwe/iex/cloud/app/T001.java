@@ -135,8 +135,8 @@ public class T001 {
 		
 		{
 		// 2 per call
-			yokwe.iex.cloud.data.stock.ChartDate chartDate = yokwe.iex.cloud.data.stock.ChartDate.getInstance(context, "20190705", "trtn");
-			logger.info("chartDate = {}", chartDate);
+			List<yokwe.iex.cloud.data.stock.ChartDate> chartDateList = yokwe.iex.cloud.data.stock.ChartDate.getInstance(context, "20190705", "trtn");
+			logger.info("chartDateList = {}", chartDateList);
 		}
 
 		{

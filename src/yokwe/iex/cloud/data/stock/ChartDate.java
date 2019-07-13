@@ -91,7 +91,7 @@ public class ChartDate extends Base implements Comparable<ChartDate> {
 	}
 		
 	
-	public static ChartDate getInstance(Context context, LocalDate date, String symbol) {
+	public static List<ChartDate> getInstance(Context context, LocalDate date, String symbol) {
 		int y = date.getYear();
 		int m = date.getMonthValue();
 		int d = date.getDayOfMonth();
@@ -105,16 +105,11 @@ public class ChartDate extends Base implements Comparable<ChartDate> {
 	}
 	// https://cloud.iexapis.com/v1/stock/TRTN/chart/date/20190705?chartByDay=true&token=XX&format=csv
 	public static final String METHOD = "/stock/%s/chart/date/%s";
-	public static ChartDate getInstance(Context context, String date, String symbol) {
+	public static List<ChartDate> getInstance(Context context, String date, String symbol) {
 		String base = context.getBaseURL(String.format(METHOD, encodeString(symbol), date));
 		String url  = context.getURL(base, Format.CSV, paramMap);
 
 		List<ChartDate> ret = getCSV(context, url, ChartDate.class);
-		// Sanity check
-		if (ret.size() != 1) {
-			logger.error("ret.size() != 1  {}", ret.size());
-			throw new UnexpectedException("ret.size() != 1");
-		}
 		
 		// Check token usage
 		{
@@ -125,7 +120,7 @@ public class ChartDate extends Base implements Comparable<ChartDate> {
 				throw new UnexpectedException("Unexpected token usage");
 			}
 		}
-		return ret.get(0);
+		return ret;
 	}
 	
 	// https://sandbox.iexapis.com/v1/stock/market/chart/date/20190705?chartByDay=true&symbols=ibm,trtn&token=XX&format=json
