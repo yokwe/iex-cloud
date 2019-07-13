@@ -1,9 +1,11 @@
 package yokwe.iex.cloud.app;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.LoggerFactory;
 
+import yokwe.iex.cloud.Base.Range;
 import yokwe.iex.cloud.Context;
 import yokwe.iex.cloud.Type;
 import yokwe.iex.cloud.Version;
@@ -49,37 +51,29 @@ public class T001 {
 			logger.info("symbols = {}", symbols.size());
 		}
 
-//		{
-//			// 100 per call
-//			List<yokwe.iex.cloud.data.reference.otc.Symbols> otcSymbols = yokwe.iex.cloud.data.reference.otc.Symbols.getInstance(context);
-//			logger.info("otcSymbols = {}", otcSymbols.size());
-//			
-//			Base.saveCSV(otcSymbols);
-//		}
+		{
+			// 100 per call
+			List<yokwe.iex.cloud.data.reference.otc.Symbols> otcSymbols = yokwe.iex.cloud.data.reference.otc.Symbols.getInstance(context);
+			logger.info("otcSymbols = {}", otcSymbols.size());
+		}
 
-//		{
-//			// 1 per call
-//			List<yokwe.iex.cloud.data.reference.Exchanges> exchanges = yokwe.iex.cloud.data.reference.Exchanges.getInstance(context);
-//			logger.info("exchanges = {}", exchanges.size());
-//			
-//			Base.saveCSV(exchanges);
-//		}
+		{
+			// 1 per call
+			List<yokwe.iex.cloud.data.reference.Exchanges> exchanges = yokwe.iex.cloud.data.reference.Exchanges.getInstance(context);
+			logger.info("exchanges = {}", exchanges.size());
+		}
 
-//		{
-//			// 1 per call
-//			List<yokwe.iex.cloud.data.reference.market.us.Exchanges> marketUSExchanges = yokwe.iex.cloud.data.reference.market.us.Exchanges.getInstance(context);
-//			logger.info("marketUSExchanges = {}", marketUSExchanges.size());
-//			
-//			Base.saveCSV(marketUSExchanges);
-//		}
+		{
+			// 1 per call
+			List<yokwe.iex.cloud.data.reference.market.us.Exchanges> marketUSExchanges = yokwe.iex.cloud.data.reference.market.us.Exchanges.getInstance(context);
+			logger.info("marketUSExchanges = {}", marketUSExchanges.size());
+		}
 
-//		{
-//			// 100 per call
-//			List<yokwe.iex.cloud.data.reference.mutualFunds.Symbols> mfSymbols = yokwe.iex.cloud.data.reference.mutualFunds.Symbols.getInstance(context);
-//			logger.info("mfSymbols = {}", mfSymbols.size());
-//			
-//			Base.saveCSV(mfSymbols);
-//		}
+		{
+			// 100 per call
+			List<yokwe.iex.cloud.data.reference.mutualFunds.Symbols> mfSymbols = yokwe.iex.cloud.data.reference.mutualFunds.Symbols.getInstance(context);
+			logger.info("mfSymbols = {}", mfSymbols.size());
+		}
 
 				
 		{
@@ -101,86 +95,86 @@ public class T001 {
 			}
 		}
 
-//		{
-//		// 10 per return record
-//			List<yokwe.iex.cloud.data.stock.Dividends> dividendList = yokwe.iex.cloud.data.stock.Dividends.getInstance(context, "trtn", Range.Y1);
-//			logger.info("dividendList = {}", dividendList.size());
-//			for(int i = 0; i < dividendList.size(); i++) {
-//				yokwe.iex.cloud.data.stock.Dividends dividend = dividendList.get(i); 
-//				logger.info("{}", dividend);
-//			}
-//		}
-//		{
-//		// 10 per return record
-//			Map<String, List<yokwe.iex.cloud.data.stock.Dividends>> mapList = yokwe.iex.cloud.data.stock.Dividends.getInstance(context, Range.Y1, "ibm", "amzn");
-//			logger.info("mapList = {}", mapList.size());
-//			for(Map.Entry<String, List<yokwe.iex.cloud.data.stock.Dividends>> entry: mapList.entrySet()) {
-//				logger.info("{}  {}", entry.getKey(), entry.getValue().size());
-//				for(yokwe.iex.cloud.data.stock.Dividends dividends: entry.getValue()) {
-//					logger.info("  {}", dividends);
-//				}
-//			}
-//		}
+		{
+		// 10 per return record
+			List<yokwe.iex.cloud.data.stock.Dividends> dividendList = yokwe.iex.cloud.data.stock.Dividends.getInstance(context, Range.Y1, "trtn");
+			logger.info("dividendList = {}", dividendList.size());
+			for(int i = 0; i < dividendList.size(); i++) {
+				yokwe.iex.cloud.data.stock.Dividends dividend = dividendList.get(i); 
+				logger.info("{}", dividend);
+			}
+		}
+		{
+		// 10 per return record
+			Map<String, List<yokwe.iex.cloud.data.stock.Dividends>> mapList = yokwe.iex.cloud.data.stock.Dividends.getInstance(context, Range.Y1, "ibm", "amzn");
+			logger.info("mapList = {}", mapList.size());
+			for(Map.Entry<String, List<yokwe.iex.cloud.data.stock.Dividends>> entry: mapList.entrySet()) {
+				logger.info("{}  {}", entry.getKey(), entry.getValue().size());
+				for(yokwe.iex.cloud.data.stock.Dividends dividends: entry.getValue()) {
+					logger.info("  {}", dividends);
+				}
+			}
+		}
 
-//		{
-//		// 2 per call
-//			yokwe.iex.cloud.data.stock.Previous previous = yokwe.iex.cloud.data.stock.Previous.getInstance(context, "trtn");
-//			logger.info("previous = {}", previous);
-//		}
+		{
+		// 2 per call
+			yokwe.iex.cloud.data.stock.Previous previous = yokwe.iex.cloud.data.stock.Previous.getInstance(context, "trtn");
+			logger.info("previous = {}", previous);
+		}
 		
-//		{
-//		// 2 per call
-//			List<yokwe.iex.cloud.data.stock.Previous> previousList = yokwe.iex.cloud.data.stock.Previous.getInstance(context, "trtn", "ibm");
-//			logger.info("previousList = {}", previousList.size());
-//			for(int i = 0; i < previousList.size(); i++) {
-//				yokwe.iex.cloud.data.stock.Previous previous = previousList.get(i); 
-//				logger.info("{}", previous);
-//			}
-//		}
+		{
+		// 2 per call
+			List<yokwe.iex.cloud.data.stock.Previous> previousList = yokwe.iex.cloud.data.stock.Previous.getInstance(context, "trtn", "ibm");
+			logger.info("previousList = {}", previousList.size());
+			for(int i = 0; i < previousList.size(); i++) {
+				yokwe.iex.cloud.data.stock.Previous previous = previousList.get(i); 
+				logger.info("{}", previous);
+			}
+		}
 
 		
-//		{
-//		// 2 per call
-//			yokwe.iex.cloud.data.stock.ChartDate chartDate = yokwe.iex.cloud.data.stock.ChartDate.getInstance(context, "trtn", "20190705");
-//			logger.info("chartDate = {}", chartDate);
-//		}
+		{
+		// 2 per call
+			yokwe.iex.cloud.data.stock.ChartDate chartDate = yokwe.iex.cloud.data.stock.ChartDate.getInstance(context, "20190705", "trtn");
+			logger.info("chartDate = {}", chartDate);
+		}
 
-//		{
-//		// 2 per return record
-//			Map<String, List<yokwe.iex.cloud.data.stock.ChartDate>> mapList = yokwe.iex.cloud.data.stock.ChartDate.getInstance(context, "20190705", "ibm", "amzn");
-//			logger.info("mapList = {}", mapList.size());
-//			for(Map.Entry<String, List<yokwe.iex.cloud.data.stock.ChartDate>> entry: mapList.entrySet()) {
-//				logger.info("{}  {}", entry.getKey(), entry.getValue().size());
-//				for(yokwe.iex.cloud.data.stock.ChartDate dividends: entry.getValue()) {
-//					logger.info("  {}", dividends);
-//				}
-//			}
-//		}
+		{
+		// 2 per return record
+			Map<String, List<yokwe.iex.cloud.data.stock.ChartDate>> mapList = yokwe.iex.cloud.data.stock.ChartDate.getInstance(context, "20190705", "ibm", "amzn");
+			logger.info("mapList = {}", mapList.size());
+			for(Map.Entry<String, List<yokwe.iex.cloud.data.stock.ChartDate>> entry: mapList.entrySet()) {
+				logger.info("{}  {}", entry.getKey(), entry.getValue().size());
+				for(yokwe.iex.cloud.data.stock.ChartDate dividends: entry.getValue()) {
+					logger.info("  {}", dividends);
+				}
+			}
+		}
 
-//		{
-//		// 10 per returned record
-//			List<yokwe.iex.cloud.data.stock.Chart> chartList = yokwe.iex.cloud.data.stock.Chart.getInstance(context, "trtn", Range.D5);
-//			logger.info("chartList = {}", chartList.size());
-//			for(int i = 0; i < chartList.size(); i++) {
-//				yokwe.iex.cloud.data.stock.Chart chart = chartList.get(i); 
-//				logger.info("{}", chart);
-//			}
-//		}
+		{
+		// 10 per returned record
+			List<yokwe.iex.cloud.data.stock.Chart> chartList = yokwe.iex.cloud.data.stock.Chart.getInstance(context, "trtn", Range.D5);
+			logger.info("chartList = {}", chartList.size());
+			for(int i = 0; i < chartList.size(); i++) {
+				yokwe.iex.cloud.data.stock.Chart chart = chartList.get(i); 
+				logger.info("{}", chart);
+			}
+		}
 
-//		{
-//		// 1 per call
-//			yokwe.iex.cloud.data.stock.OHLC ohlc = yokwe.iex.cloud.data.stock.OHLC.getInstance(context, "trtn");
-//			logger.info("ohlc = {}", ohlc);
-//		}
-//		{
-//		// 1 per call
-//			List<yokwe.iex.cloud.data.stock.OHLC> ohlcList = yokwe.iex.cloud.data.stock.OHLC.getInstance(context, "trtn", "ibm");
-//			logger.info("ohlcList = {}", ohlcList.size());
-//			for(int i = 0; i < ohlcList.size(); i++) {
-//				yokwe.iex.cloud.data.stock.OHLC ohlc = ohlcList.get(i); 
-//				logger.info("{}", ohlc);
-//			}
-//		}
+		{
+		// 1 per call
+			yokwe.iex.cloud.data.stock.OHLC ohlc = yokwe.iex.cloud.data.stock.OHLC.getInstance(context, "trtn");
+			logger.info("ohlc = {}", ohlc);
+		}
+		{
+		// 1 per call
+			List<yokwe.iex.cloud.data.stock.OHLC> ohlcList = yokwe.iex.cloud.data.stock.OHLC.getInstance(context, "trtn", "ibm");
+			logger.info("ohlcList = {}", ohlcList.size());
+			for(int i = 0; i < ohlcList.size(); i++) {
+				yokwe.iex.cloud.data.stock.OHLC ohlc = ohlcList.get(i); 
+				logger.info("{}", ohlc);
+			}
+		}
 
 		logger.info("STOP");
 	}
