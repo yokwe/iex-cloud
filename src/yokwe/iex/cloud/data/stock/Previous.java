@@ -13,7 +13,7 @@ import yokwe.iex.cloud.Base;
 import yokwe.iex.cloud.Context;
 
 public class Previous extends Base implements Comparable<Previous> {	
-	static final org.slf4j.Logger logger = LoggerFactory.getLogger(Previous.class);
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Previous.class);
 
 	public static final int    DATA_WEIGHT = 2; // 2 per return records
 	
@@ -87,6 +87,16 @@ public class Previous extends Base implements Comparable<Previous> {
 		String url  = context.getURL(base, Format.JSON);
 
 		Previous ret = getObject(context, url, Previous.class);
+		
+		// Check token usage
+		{
+			int actual = context.getTokenUsed();
+			int expect = DATA_WEIGHT;
+			if (actual != expect) {
+				logger.error("Unexpected token usage {}  {}", actual, expect);
+				throw new UnexpectedException("Unexpected token usage");
+			}
+		}
 		return ret;
 	}
 	
@@ -110,6 +120,16 @@ public class Previous extends Base implements Comparable<Previous> {
 		String url  = context.getURL(base, Format.JSON, paramMap);
 
 		List<Previous> ret = getArray(context, url, Previous.class);
+		
+		// Check token usage
+		{
+			int actual = context.getTokenUsed();
+			int expect = DATA_WEIGHT * ret.size();
+			if (actual != expect) {
+				logger.error("Unexpected token usage {}  {}", actual, expect);
+				throw new UnexpectedException("Unexpected token usage");
+			}
+		}
 		return ret;
 	}
 

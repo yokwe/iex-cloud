@@ -13,7 +13,7 @@ import yokwe.iex.cloud.Base;
 import yokwe.iex.cloud.Context;
 
 public class Dividends extends Base implements Comparable<Dividends> {	
-	static final org.slf4j.Logger logger = LoggerFactory.getLogger(Dividends.class);
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Dividends.class);
 	
 	public static final int    DATA_WEIGHT = 10; // 10 per return records
 	
@@ -87,6 +87,16 @@ public class Dividends extends Base implements Comparable<Dividends> {
 		String url  = context.getURL(base, Format.CSV);
 
 		List<Dividends> ret = getCSV(context, url, Dividends.class);
+		
+		// Check token usage
+		{
+			int actual = context.getTokenUsed();
+			int expect = DATA_WEIGHT * ret.size();
+			if (actual != expect) {
+				logger.error("Unexpected token usage {}  {}", actual, expect);
+				throw new UnexpectedException("Unexpected token usage");
+			}
+		}
 		return ret;
 	}
 	
@@ -116,7 +126,15 @@ public class Dividends extends Base implements Comparable<Dividends> {
 			ret.put(symbols[i], result.get(i));
 		}
 		
+		// Check token usage
+		{
+			int actual = context.getTokenUsed();
+			int expect = DATA_WEIGHT * ret.values().stream().mapToInt(o -> o.size()).sum();
+			if (actual != expect) {
+				logger.error("Unexpected token usage {}  {}", actual, expect);
+				throw new UnexpectedException("Unexpected token usage");
+			}
+		}
 		return ret;
 	}
-
 }

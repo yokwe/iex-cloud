@@ -16,7 +16,7 @@ import yokwe.iex.cloud.IEXCloud.TimeZone;
 import yokwe.iex.cloud.IEXCloud.UseTimeZone;
 
 public class OHLC extends Base implements Comparable<OHLC> {	
-	static final org.slf4j.Logger logger = LoggerFactory.getLogger(OHLC.class);
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(OHLC.class);
 
 	public static final int    DATA_WEIGHT = 1; // 1 per return records
 		
@@ -81,6 +81,16 @@ public class OHLC extends Base implements Comparable<OHLC> {
 		String url  = context.getURL(base, Format.JSON);
 
 		OHLC ret = getObject(context, url, OHLC.class);
+		
+		// Check token usage
+		{
+			int actual = context.getTokenUsed();
+			int expect = DATA_WEIGHT;
+			if (actual != expect) {
+				logger.error("Unexpected token usage {}  {}", actual, expect);
+				throw new UnexpectedException("Unexpected token usage");
+			}
+		}
 		return ret;
 	}
 	
@@ -104,6 +114,16 @@ public class OHLC extends Base implements Comparable<OHLC> {
 		String url  = context.getURL(base, Format.JSON, paramMap);
 
 		List<OHLC> ret = getArray(context, url, OHLC.class);
+		
+		// Check token usage
+		{
+			int actual = context.getTokenUsed();
+			int expect = DATA_WEIGHT * ret.size();
+			if (actual != expect) {
+				logger.error("Unexpected token usage {}  {}", actual, expect);
+				throw new UnexpectedException("Unexpected token usage");
+			}
+		}
 		return ret;
 	}
 }

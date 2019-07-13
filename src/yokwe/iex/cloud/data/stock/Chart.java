@@ -6,11 +6,12 @@ import javax.json.JsonObject;
 
 import org.slf4j.LoggerFactory;
 
+import yokwe.iex.UnexpectedException;
 import yokwe.iex.cloud.Base;
 import yokwe.iex.cloud.Context;
 
 public class Chart extends Base implements Comparable<Chart> {	
-	static final org.slf4j.Logger logger = LoggerFactory.getLogger(Chart.class);
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Chart.class);
 
 	public static final int    DATA_WEIGHT = 10; // 10 per return records
 	public static final String METHOD      = "/stock/%s/chart/%s";
@@ -78,6 +79,16 @@ public class Chart extends Base implements Comparable<Chart> {
 		String url  = context.getURL(base, Format.CSV);
 
 		List<Chart> ret = getCSV(context, url, Chart.class);
+		
+		// Check token usage
+		{
+			int actual = context.getTokenUsed();
+			int expect = DATA_WEIGHT * ret.size();
+			if (actual != expect) {
+				logger.error("Unexpected token usage {}  {}", actual, expect);
+				throw new UnexpectedException("Unexpected token usage");
+			}
+		}
 		return ret;
 	}
 }

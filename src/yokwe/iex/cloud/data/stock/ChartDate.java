@@ -14,7 +14,7 @@ import yokwe.iex.cloud.Base;
 import yokwe.iex.cloud.Context;
 
 public class ChartDate extends Base implements Comparable<ChartDate> {	
-	static final org.slf4j.Logger logger = LoggerFactory.getLogger(ChartDate.class);
+	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(ChartDate.class);
 
 	public static final int    DATA_WEIGHT = 2; // 2 per return records
 	
@@ -90,13 +90,7 @@ public class ChartDate extends Base implements Comparable<ChartDate> {
 		return this.date.compareTo(that.date);
 	}
 		
-	private static Map<String, String> paramMap = new TreeMap<>();
-	static {
-		paramMap.put("chartByDay", "true");
-	}
 	
-	// https://cloud.iexapis.com/v1/stock/TRTN/chart/date/20190705?chartByDay=true&token=XX&format=csv
-	public static final String METHOD = "/stock/%s/chart/date/%s";
 	public static ChartDate getInstance(Context context, LocalDate date, String symbol) {
 		int y = date.getYear();
 		int m = date.getMonthValue();
@@ -105,6 +99,12 @@ public class ChartDate extends Base implements Comparable<ChartDate> {
 		String dateString = String.format("%d%02d%02d", y, m, d);
 		return getInstance(context, dateString, symbol);
 	}
+	private static Map<String, String> paramMap = new TreeMap<>();
+	static {
+		paramMap.put("chartByDay", "true");
+	}
+	// https://cloud.iexapis.com/v1/stock/TRTN/chart/date/20190705?chartByDay=true&token=XX&format=csv
+	public static final String METHOD = "/stock/%s/chart/date/%s";
 	public static ChartDate getInstance(Context context, String date, String symbol) {
 		String base = context.getBaseURL(String.format(METHOD, encodeString(symbol), date));
 		String url  = context.getURL(base, Format.CSV, paramMap);
@@ -116,6 +116,15 @@ public class ChartDate extends Base implements Comparable<ChartDate> {
 			throw new UnexpectedException("ret.size() != 1");
 		}
 		
+		// Check token usage
+		{
+			int actual = context.getTokenUsed();
+			int expect = DATA_WEIGHT * ret.size();
+			if (actual != expect) {
+				logger.error("Unexpected token usage {}  {}", actual, expect);
+				throw new UnexpectedException("Unexpected token usage");
+			}
+		}
 		return ret.get(0);
 	}
 	
@@ -154,7 +163,15 @@ public class ChartDate extends Base implements Comparable<ChartDate> {
 			ret.put(symbols[i], result.get(i));
 		}
 		
+		// Check token usage
+		{
+			int actual = context.getTokenUsed();
+			int expect = DATA_WEIGHT * ret.values().stream().mapToInt(o -> o.size()).sum();
+			if (actual != expect) {
+				logger.error("Unexpected token usage {}  {}", actual, expect);
+				throw new UnexpectedException("Unexpected token usage");
+			}
+		}
 		return ret;
 	}
-
 }
