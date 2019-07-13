@@ -176,6 +176,21 @@ public class T001 {
 			}
 		}
 
+		{
+		// 2 per call
+			yokwe.iex.cloud.data.stock.Previous previous = yokwe.iex.cloud.data.stock.Previous.getInstance(context, "trtn");
+			logger.info("previous = {}", previous);
+		}
+		{
+		// 2 per call
+			List<yokwe.iex.cloud.data.stock.Previous> previousList = yokwe.iex.cloud.data.stock.Previous.getInstance(context, "trtn", "ibm");
+			logger.info("previousList = {}", previousList.size());
+			for(int i = 0; i < previousList.size(); i++) {
+				yokwe.iex.cloud.data.stock.Previous previous = previousList.get(i); 
+				logger.info("{}", previous);
+			}
+		}
+
 		logger.info("STOP");
 	}
 }
