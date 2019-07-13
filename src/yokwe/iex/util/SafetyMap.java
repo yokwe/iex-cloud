@@ -1,6 +1,8 @@
 package yokwe.iex.util;
 
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.slf4j.LoggerFactory;
@@ -30,5 +32,11 @@ public final class SafetyMap<K, V> {
 	}
 	public boolean containsKey(K key) {
 		return map.containsKey(key);
+	}
+	public Collection<V> values() {
+		return map.values();
+	}
+	public Set<K> keySet() {
+		return map.keySet();
 	}
 }
