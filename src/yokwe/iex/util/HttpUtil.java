@@ -103,6 +103,14 @@ public class HttpUtil {
 						continue;
 					}
 				}
+				if (code == HttpStatus.SC_INTERNAL_SERVER_ERROR) { // 500
+					if (retryCount < 10) {
+						retryCount++;
+						logger.warn("retry {} {} {}  {}", retryCount, code, reasonPhrase, url);
+						Thread.sleep(1000 * retryCount * retryCount); // sleep 1 * retryCount * retryCount sec
+						continue;
+					}
+				}
 				retryCount = 0;
 				if (code == HttpStatus.SC_NOT_FOUND) { // 404
 					logger.warn("{} {}  {}", code, reasonPhrase, url);
