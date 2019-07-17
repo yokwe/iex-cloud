@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import yokwe.iex.UnexpectedException;
 import yokwe.iex.cloud.Base;
 import yokwe.iex.cloud.Context;
+import yokwe.iex.cloud.IEXCloud.JSONName;
 
 public class Company extends Base implements Comparable<Company> {	
 	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Company.class);
@@ -41,6 +42,7 @@ public class Company extends Base implements Comparable<Company> {
 	public String   industry;
 	public String   website;
 	public String   description;
+	@JSONName("CEO")
 	public String   ceo;
 	public String   securityName;
 	public String   issueType;
