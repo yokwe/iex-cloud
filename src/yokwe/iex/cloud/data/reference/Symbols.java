@@ -14,7 +14,6 @@ public class Symbols extends Base implements Comparable<Symbols> {
 	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Symbols.class);
 
 	public static final int    DATA_WEIGHT = 100; // 100 per call
-	public static final String METHOD      = "/ref-data/symbols";
 
 	// symbol,exchange,name,date,type,iexId,region,currency,isEnabled
 	public String  symbol;
@@ -48,8 +47,28 @@ public class Symbols extends Base implements Comparable<Symbols> {
 		return this.symbol.compareTo(that.symbol);
 	}
 	
+	public static final String METHOD      = "/ref-data/symbols";
 	public static List<Symbols> getInstance(Context context) {
 		String base = context.getBaseURL(METHOD);
+		String url  = context.getURL(base, Format.CSV);
+		
+		List<Symbols> ret = getCSV(context, url, Symbols.class);
+		
+		// Check token usage
+		{
+			int actual = context.getTokenUsed();
+			int expect = DATA_WEIGHT;
+			if (actual != expect) {
+				logger.error("Unexpected token usage {}  {}", actual, expect);
+				throw new UnexpectedException("Unexpected token usage");
+			}
+		}
+		return ret;
+	}
+	
+	public static final String METHOD_REGION      = "/ref-data/region/%s/symbols";
+	public static List<Symbols> getInstanceRegion(Context context, String region) {
+		String base = context.getBaseURL(String.format(METHOD_REGION, region));
 		String url  = context.getURL(base, Format.CSV);
 		
 		List<Symbols> ret = getCSV(context, url, Symbols.class);
