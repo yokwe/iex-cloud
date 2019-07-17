@@ -220,9 +220,8 @@ public class T001 {
 		{
 		// 1 per record
 			List<yokwe.iex.cloud.data.stock.Company> companyList = yokwe.iex.cloud.data.stock.Company.getInstance(context, "IBM", "TRTN");
-			logger.info("tagList = {}", companyList.size());
-			for(int i = 0; i < companyList.size(); i++) {
-				yokwe.iex.cloud.data.stock.Company company = companyList.get(i); 
+			logger.info("companyList = {}", companyList.size());
+			for(yokwe.iex.cloud.data.stock.Company company: companyList) {
 				logger.info("{}", company);
 			}
 		}
