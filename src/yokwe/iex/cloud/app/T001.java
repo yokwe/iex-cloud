@@ -191,6 +191,42 @@ public class T001 {
 			}
 		}
 
+		{
+		// 1 per call
+			List<yokwe.iex.cloud.data.reference.Sectors> sectorsList = yokwe.iex.cloud.data.reference.Sectors.getInstance(context);
+			logger.info("sectorsList = {}", sectorsList.size());
+			for(int i = 0; i < sectorsList.size(); i++) {
+//				yokwe.iex.cloud.data.reference.Sectors sectors = sectorsList.get(i); 
+//				logger.info("{}", sectors);
+			}
+		}
+
+		{
+		// 1 per call
+			List<yokwe.iex.cloud.data.reference.Tags> tagList = yokwe.iex.cloud.data.reference.Tags.getInstance(context);
+			logger.info("tagList = {}", tagList.size());
+			for(int i = 0; i < tagList.size(); i++) {
+//				yokwe.iex.cloud.data.reference.Tags tags = tagList.get(i); 
+//				logger.info("{}", tags);
+			}
+		}
+
+		{
+		// 1 per record
+			yokwe.iex.cloud.data.stock.Company company = yokwe.iex.cloud.data.stock.Company.getInstance(context, "IBM");
+			logger.info("company {}", company);
+		}
+
+		{
+		// 1 per record
+			List<yokwe.iex.cloud.data.stock.Company> companyList = yokwe.iex.cloud.data.stock.Company.getInstance(context, "IBM", "TRTN");
+			logger.info("tagList = {}", companyList.size());
+			for(int i = 0; i < companyList.size(); i++) {
+				yokwe.iex.cloud.data.stock.Company company = companyList.get(i); 
+				logger.info("{}", company);
+			}
+		}
+
 		logger.info("STOP");
 	}
 }
