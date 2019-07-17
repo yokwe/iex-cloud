@@ -45,7 +45,7 @@ public class Company extends Base implements Comparable<Company> {
 	public String   securityName;
 	public String   issueType;
 	public String   sector;
-	public double   employees;
+	public int      employees;
 	public String[] tags;
 	
 	public Company() {
