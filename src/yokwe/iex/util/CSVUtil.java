@@ -99,7 +99,7 @@ public class CSVUtil {
 			
 			clazz = field.getType();
 			clazzName  = clazz.getName();
-				if (clazz.isEnum()) {
+			if (clazz.isEnum()) {
 				enumMap = new TreeMap<>();
 				
 				@SuppressWarnings("unchecked")
