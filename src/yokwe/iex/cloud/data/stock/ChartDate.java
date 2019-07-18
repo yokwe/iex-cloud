@@ -123,7 +123,7 @@ public class ChartDate extends Base implements Comparable<ChartDate> {
 		return ret;
 	}
 	
-	// https://sandbox.iexapis.com/v1/stock/market/chart/date/20190705?chartByDay=true&symbols=ibm,trtn&token=XX&format=json
+	// Need to return as Map not List, because ChartDate contains no symbol field.
 	public static final String METHOD_MARKET = "/stock/market/chart/date/%s";
 	public static Map<String, List<ChartDate>> getInstance(Context context, LocalDate date, String... symbols) {
 		int y = date.getYear();

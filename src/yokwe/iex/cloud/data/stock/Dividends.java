@@ -100,6 +100,7 @@ public class Dividends extends Base implements Comparable<Dividends> {
 		return ret;
 	}
 	
+	// Need to return as Map not List, because Dividends contains no symbol field.
 	public static final String METHOD_MARKET = "/stock/market/dividends";
 	public static Map<String, List<Dividends>> getInstance(Context context, Range range, String... symbols) {
 		// Sanity check
