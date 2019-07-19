@@ -226,6 +226,15 @@ public class T001 {
 			}
 		}
 
+		{
+		// 1 per record
+			List<yokwe.iex.cloud.data.stock.Quote> quoteList = yokwe.iex.cloud.data.stock.Quote.getInstance(context, "IBM", "TRTN");
+			logger.info("quoteList = {}", quoteList.size());
+			for(yokwe.iex.cloud.data.stock.Quote quote: quoteList) {
+				logger.info("{}", quote);
+			}
+		}
+
 		logger.info("STOP");
 	}
 }
