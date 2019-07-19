@@ -16,7 +16,7 @@ import yokwe.iex.cloud.IEXCloud.JSONName;
 public class Company extends Base implements Comparable<Company> {	
 	private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Company.class);
 
-	public static final int    DATA_WEIGHT = 1; // 2 per return records
+	public static final int    DATA_WEIGHT = 1; // 1 per return records
 	
 //	{
 //		  "symbol": "TRTN",
