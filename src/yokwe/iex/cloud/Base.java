@@ -187,7 +187,7 @@ public class Base {
 				// If field is null, assign default value
 				if (o == null) {
 					if (!fieldInfo.ignoreField) {
-						logger.warn("Assign defautl value  {} {} {}", iexInfo.clazzName, fieldInfo.name, fieldInfo.type);
+						logger.warn("Assign default value  {} {} {}", iexInfo.clazzName, fieldInfo.name, fieldInfo.type);
 					}
 					setValue(fieldInfo);
 				}
