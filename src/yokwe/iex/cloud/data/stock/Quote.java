@@ -72,7 +72,7 @@ public class Quote extends Base implements Comparable<Quote> {
 	    public double        open;
 		@UseTimeZone(TimeZone.NEW_YORK)
 		public LocalDateTime openTime;
-	    public double close;
+	    public double        close;
 		@UseTimeZone(TimeZone.NEW_YORK)
 	    public LocalDateTime closeTime;
 	    public double        high;
