@@ -145,6 +145,18 @@ public class Base {
 	protected Base(JsonObject jsonObject) {
 		try {
 			ClassInfo iexInfo = ClassInfo.get(this);
+			// Sanity check
+			for(ClassInfo.FieldInfo fieldInfo: iexInfo.fieldInfos) {
+				if (jsonObject.containsKey(fieldInfo.jsonName))  continue;
+				// jsonObject doesn't contains field named fieldInfo.jsonName
+				logger.warn("Missing json field  {}  {}  {}", iexInfo.clazzName, fieldInfo.jsonName, jsonObject.keySet());
+			}
+			for(String jsonKey: jsonObject.keySet()) {
+				if (iexInfo.fieldNameSet.contains(jsonKey)) continue;
+				// this class doesn't contains field named jsonKey
+				logger.warn("Unknown json field  {}  {}  {}", iexInfo.clazzName, jsonKey, iexInfo.fieldNameSet);
+			}
+			
 			for(ClassInfo.FieldInfo fieldInfo: iexInfo.fieldInfos) {
 				// Skip field if name is not exist in jsonObject
 				if (!jsonObject.containsKey(fieldInfo.jsonName))continue;
