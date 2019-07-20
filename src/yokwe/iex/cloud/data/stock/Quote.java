@@ -103,9 +103,9 @@ public class Quote extends Base implements Comparable<Quote> {
 	    public double        iexMarketPercent;
 	    public long          iexVolume;
 	    public long          avgTotalVolume;
-	    public double        iexBid;
+	    public double        iexBidPrice;
 	    public long          iexBidSize;
-	    public double        iexAsk;
+	    public double        iexAskPrice;
 	    public long          iexAskSize;
 	    public long          marketCap;
 	    public double        peRatio;
@@ -149,9 +149,9 @@ public class Quote extends Base implements Comparable<Quote> {
 	    iexMarketPercent      = 0;
 	    iexVolume             = 0;
 	    avgTotalVolume        = 0;
-	    iexBid                = 0;
+	    iexBidPrice           = 0;
 	    iexBidSize            = 0;
-	    iexAsk                = 0;
+	    iexAskPrice           = 0;
 	    iexAskSize            = 0;
 	    marketCap             = 0;
 	    peRatio               = 0;
