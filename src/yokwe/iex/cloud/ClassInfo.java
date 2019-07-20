@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import javax.json.JsonObject;
 
@@ -89,6 +91,7 @@ public class ClassInfo {
 	public final String            method;
 	public final FieldInfo[]       fieldInfos;
 	public final int               fieldSize;
+	public final Set<String>       fieldNameSet; // Set of fieldsInfos[].jsonName
 	public final Constructor<Base> construcor;
 	
 	private static String getStaticStringFieldValue(Class<?> clazz, String fieldName) {
@@ -139,11 +142,12 @@ public class ClassInfo {
 				}
 			}
 			
-			this.clazzName  = clazz.getName();
-			this.method     = getStaticStringFieldValue(clazz, "METHOD");
-			this.fieldInfos = fieldInfos;
-			this.fieldSize  = fieldSize;
-			this.construcor = clazz.getDeclaredConstructor(JsonObject.class);
+			this.clazzName    = clazz.getName();
+			this.method       = getStaticStringFieldValue(clazz, "METHOD");
+			this.fieldInfos   = fieldInfos;
+			this.fieldSize    = fieldSize;
+			this.fieldNameSet = Arrays.stream(fieldInfos).map(o -> o.jsonName).collect(Collectors.toSet());
+			this.construcor   = clazz.getDeclaredConstructor(JsonObject.class);
 		} catch (SecurityException | IllegalArgumentException | NoSuchMethodException e) {
 			String exceptionName = e.getClass().getSimpleName();
 			logger.error("{} {}", exceptionName, e);
