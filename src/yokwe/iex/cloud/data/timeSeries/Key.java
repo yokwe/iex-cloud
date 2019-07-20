@@ -18,41 +18,45 @@ public class Key extends Base {
 	public static final String METHOD      = "/time-series";
 
 //	[
-//	    {
-//	        "id": "REPORTED_FINANCIALS",
-//	        "description": "Reported financials",
-//	        "schema": {
-//	            "type": "object",
-//	            "properties": {
-//	                "formFiscalYear": {
-//	                    "type": "number"
-//	                },
-//	                "formFiscalQuarter": {
-//	                    "type": "number"
-//	                },
-//	                "version": {
-//	                    "type": "string"
-//	                },
-//	                "periodStart": {
-//	                    "type": "string"
-//	                },
-//	                "periodEnd": {
-//	                    "type": "string"
-//	                },
-//	                "dateFiled": {
-//	                    "type": "string"
-//	                },
-//	                "reportLink": {
-//	                    "type": "string"
-//	                }
-//	            },
-//	            "required": [],
-//	            "additionalProperties": true
+//	  {
+//	    "id": "REPORTED_FINANCIALS",
+//	    "description": "Reported financials",
+//	    "schema": {
+//	      "type": "object",
+//	      "properties": {
+//	        "formFiscalYear": {
+//	          "type": "number"
 //	        },
-//	        "weight": 5000,
-//	        "created": "2019-06-04 21:33:04",
-//	        "lastUpdated": "2019-06-04 21:33:04"
-//	    }
+//	        "formFiscalQuarter": {
+//	          "type": "number"
+//	        },
+//	        "version": {
+//	          "type": "string"
+//	        },
+//	        "periodStart": {
+//	          "type": "string"
+//	        },
+//	        "periodEnd": {
+//	          "type": "string"
+//	        },
+//	        "dateFiled": {
+//	          "type": "string"
+//	        },
+//	        "reportLink": {
+//	          "type": "string"
+//	        },
+//	        "adsh": {
+//	          "type": "string"
+//	        },
+//	        "stat": {
+//	          "type": "object"
+//	        }
+//	      }
+//	    },
+//	    "weight": 5000,
+//	    "created": "2019-06-04 21:32:20",
+//	    "lastUpdated": "2019-06-04 21:32:20"
+//	  }
 //	]
 	
 	public static class Property extends Base {
@@ -70,13 +74,10 @@ public class Key extends Base {
 	public static class Schema extends Base {
 		public String                type;
 		public Map<String, Property> properties;
-		// Required required;
-		public boolean               additionalProperties;
 		
 		public Schema() {
 			type                 = null;
 			properties           = null;
-			additionalProperties = false;
 		}
 		
 		public Schema(JsonObject jsonObject) {
