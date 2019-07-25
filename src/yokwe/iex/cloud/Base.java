@@ -587,21 +587,30 @@ public class Base {
 			JsonArray jsonArray = reader.readArray();
 			
 			int jsonArraySize = jsonArray.size();
-			@SuppressWarnings("unchecked")
-			E[] ret = (E[])Array.newInstance(clazz, jsonArraySize);
+			List<E> ret = new ArrayList<>(jsonArraySize);
 			
 			for(int i = 0; i < jsonArraySize; i++) {
-				JsonObject arg = jsonArray.getJsonObject(i);
-				@SuppressWarnings("unchecked")
-				E e = (E)classInfo.construcor.newInstance(arg);
-				ret[i] = e;
+				JsonValue jsonValue = jsonArray.get(i);
+				ValueType valueType = jsonValue.getValueType();
+				switch (valueType) {
+				case OBJECT:
+				{
+					JsonObject arg = jsonValue.asJsonObject();
+					@SuppressWarnings("unchecked")
+					E e = (E)classInfo.construcor.newInstance(arg);
+					ret.add(e);
+				}
+					break;
+				case NULL:
+					// Skip NULL
+					break;
+				default:
+					logger.info("Unexpected valueType  {}  {}  {}", i, valueType, jsonValue);
+					throw new UnexpectedException("Unexpected valueType");
+				}
 			}
 			
-			// Sort array
-			Arrays.sort(ret);
-			
-			// Return as list
-			return Arrays.asList(ret);
+			return ret;
 		} catch (IllegalAccessException | InstantiationException | IllegalArgumentException | InvocationTargetException | SecurityException e) {
 			String exceptionName = e.getClass().getSimpleName();
 			logger.error("{} {}", exceptionName, e);
