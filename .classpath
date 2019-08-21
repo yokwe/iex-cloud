@@ -9,11 +9,9 @@
 	<classpathentry kind="lib" path="data/jar/slf4j-api-1.7.12-sources.jar"/>
 	<classpathentry kind="lib" path="data/jar/slf4j-api-1.7.12.jar"/>
 	<classpathentry kind="lib" path="data/jar/javax.json-1.1.jar"/>
-	<classpathentry kind="lib" path="data/jar/commons-csv-1.5-sources.jar"/>
-	<classpathentry kind="lib" path="data/jar/commons-csv-1.5.jar"/>
 	<classpathentry kind="lib" path="data/jar/httpclient-4.5.5.jar"/>
 	<classpathentry kind="lib" path="data/jar/httpcore-4.4.9.jar"/>
 	<classpathentry kind="lib" path="data/jar/commons-logging-1.2.jar"/>
-        <classpathentry kind="lib" path="data/jar/misc-lib.jar"  sourcepath="/misc-lib/src"/>
+	<classpathentry kind="lib" path="data/jar/misc-lib.jar" sourcepath="/misc-lib/src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
