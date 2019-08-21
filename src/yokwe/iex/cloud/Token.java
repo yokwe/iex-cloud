@@ -3,8 +3,8 @@ package yokwe.iex.cloud;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import yokwe.iex.UnexpectedException;
-import yokwe.iex.util.FileUtil;
+import yokwe.UnexpectedException;
+import yokwe.util.FileUtil;
 
 
 public class Token {
@@ -27,7 +27,7 @@ public class Token {
 		String sandboxPublish    = null;
 		String sandobxSecret     = null;
 		
-		String content = FileUtil.read(PATH_TOKEN_FILE);
+		String content = FileUtil.read().file(PATH_TOKEN_FILE);
 		for(String line: content.split("[\\n\\r]+")) {
 			line = line.trim();
 			if (line.length() == 0) continue;

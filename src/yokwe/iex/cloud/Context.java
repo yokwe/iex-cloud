@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.slf4j.LoggerFactory;
 
-import yokwe.iex.UnexpectedException;
+import yokwe.UnexpectedException;
 import yokwe.iex.cloud.Base.Format;
 
 public class Context {
@@ -12,13 +12,15 @@ public class Context {
 	
 	public final Type    type;
 	public final Version version;
+	public final boolean httpTrace;
 	public final String  url;
 	private      int     tokenUsed;
 	private      int     tokenUsedTotal;
 	
-	public Context(Type type, Version version) {
+	public Context(Type type, Version version, boolean httpTrace) {
 		this.type           = type;
 		this.version        = version;
+		this.httpTrace      = httpTrace;
 		this.url            = String.format("%s/%s", type.url, version.url);
 		this.tokenUsed      = 0;
 		this.tokenUsedTotal = 0;
@@ -26,7 +28,7 @@ public class Context {
 	
 	@Override
 	public String toString() {
-		return String.format("[%s %s %s]", type.toString(), version.toString(), url);
+		return String.format("[%s %s %s %s]", type.toString(), version.toString(), httpTrace, url);
 	}
 	
 	public void setTokenUsed(int value) {

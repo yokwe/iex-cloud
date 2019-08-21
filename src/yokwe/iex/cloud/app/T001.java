@@ -12,7 +12,6 @@ import yokwe.iex.cloud.Version;
 import yokwe.iex.cloud.data.Status;
 import yokwe.iex.cloud.data.account.Metadata;
 import yokwe.iex.cloud.data.account.Usage;
-import yokwe.iex.util.HttpUtil;
 
 public class T001 {
 	static final org.slf4j.Logger logger = LoggerFactory.getLogger(T001.class);
@@ -20,9 +19,9 @@ public class T001 {
 	public static void main(String[] args) {
 		logger.info("START");
 		
-		HttpUtil.enableTrace(true);
+		boolean httpTrace = true;
 		
-		Context context = new Context(Type.SANDBOX, Version.V1);
+		Context context = new Context(Type.SANDBOX, Version.V1, httpTrace);
 		logger.info("context = {}", context);
 		
 		{

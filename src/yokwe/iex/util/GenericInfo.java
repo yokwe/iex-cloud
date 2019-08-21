@@ -6,7 +6,7 @@ import java.lang.reflect.Type;
 
 import org.slf4j.LoggerFactory;
 
-import yokwe.iex.UnexpectedException;
+import yokwe.UnexpectedException;
 
 //
 // Generic

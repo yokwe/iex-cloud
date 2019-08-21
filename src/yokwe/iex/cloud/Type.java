@@ -5,7 +5,7 @@ import java.util.TreeMap;
 
 import org.slf4j.LoggerFactory;
 
-import yokwe.iex.UnexpectedException;
+import yokwe.UnexpectedException;
 
 public enum Type {
 	PRODUCTION(Token.PRODUCTION, "https://cloud.iexapis.com"),

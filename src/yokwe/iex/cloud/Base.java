@@ -27,11 +27,10 @@ import javax.json.JsonValue.ValueType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import yokwe.iex.UnexpectedException;
-import yokwe.iex.util.CSVUtil;
+import yokwe.UnexpectedException;
 import yokwe.iex.util.GenericInfo;
-import yokwe.iex.util.HttpUtil;
 import yokwe.iex.util.Util;
+import yokwe.util.CSVUtil;
 
 public class Base {
 	static final Logger logger = LoggerFactory.getLogger(Base.class);
@@ -541,17 +540,25 @@ public class Base {
 		return ret;
 	}
 
-
+	private static final String HEADER_IEXCLOUD_MESSAGES_USED = "iexcloud-messages-used";
+	private static int getTokenUsed(yokwe.util.HttpUtil.Result result) {
+		if (result.headerMap.containsKey(HEADER_IEXCLOUD_MESSAGES_USED)) {
+			String value = result.headerMap.get(HEADER_IEXCLOUD_MESSAGES_USED);
+			return Integer.valueOf(value);
+		} else {
+			return -1;
+		}
+	}
 
 	public static <E extends Base> E getObject(Context context, String url, Class<E> clazz) {
 		ClassInfo classInfo = ClassInfo.get(clazz);
 
-		HttpUtil.Result result = HttpUtil.download(url);
+		yokwe.util.HttpUtil.Result result = yokwe.util.HttpUtil.getInstance().withTrace(context.httpTrace).download(url);
 		if (result.result == null) {
 			logger.error("result.result == null");
 			throw new UnexpectedException("result.result == null");
 		}
-		context.setTokenUsed(result.tokenUsed);
+		context.setTokenUsed(getTokenUsed(result));
 		
 		String jsonString = result.result;
 //		logger.info("jsonString = {}", jsonString);
@@ -572,12 +579,12 @@ public class Base {
 	public static <E extends Base> List<E> getArray(Context context, String url, Class<E> clazz) {
 		ClassInfo classInfo = ClassInfo.get(clazz);
 
-		HttpUtil.Result result = HttpUtil.download(url);
+		yokwe.util.HttpUtil.Result result = yokwe.util.HttpUtil.getInstance().withTrace(context.httpTrace).download(url);
 		if (result.result == null) {
 			logger.error("result.result == null");
 			throw new UnexpectedException("result.result == null");
 		}
-		context.setTokenUsed(result.tokenUsed);
+		context.setTokenUsed(getTokenUsed(result));
 		
 		String jsonString = result.result;
 //		logger.info("jsonString = {}", jsonString);
@@ -621,12 +628,12 @@ public class Base {
 	public static <E extends Base> List<List<E>> getArrayArray(Context context, String url, Class<E> clazz) {
 		ClassInfo classInfo = ClassInfo.get(clazz);
 
-		HttpUtil.Result result = HttpUtil.download(url);
+		yokwe.util.HttpUtil.Result result = yokwe.util.HttpUtil.getInstance().withTrace(context.httpTrace).download(url);
 		if (result.result == null) {
 			logger.error("result.result == null");
 			throw new UnexpectedException("result.result == null");
 		}
-		context.setTokenUsed(result.tokenUsed);
+		context.setTokenUsed(getTokenUsed(result));
 		
 		String jsonString = result.result;
 //		logger.info("jsonString = {}", jsonString);
@@ -664,12 +671,12 @@ public class Base {
 
 	// for symbols
 	public static <E extends Base> List<E> getCSV(Context context, String url, Class<E> clazz) {
-		HttpUtil.Result result = HttpUtil.download(url);
+		yokwe.util.HttpUtil.Result result = yokwe.util.HttpUtil.getInstance().withTrace(context.httpTrace).download(url);
 		if (result.result == null) {
 			logger.error("result.result == null");
 			throw new UnexpectedException("result.result == null");
 		}
-		context.setTokenUsed(result.tokenUsed);
+		context.setTokenUsed(getTokenUsed(result));
 
 		String csvString = result.result;
 		if (csvString == null) {
@@ -678,7 +685,7 @@ public class Base {
 		}
 		Reader reader = new StringReader(csvString);
 
-		List<E> list = CSVUtil.loadWithHeader(reader, clazz);
+		List<E> list = CSVUtil.read(clazz).file(reader);
 		
 		@SuppressWarnings("unchecked")
 		E[] ret = (E[])Array.newInstance(clazz, list.size());
@@ -692,4 +699,5 @@ public class Base {
 		// Return as list
 		return Arrays.asList(ret);
 	}
+	
 }
