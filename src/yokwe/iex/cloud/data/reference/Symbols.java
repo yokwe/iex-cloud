@@ -25,7 +25,9 @@ public class Symbols extends Base implements Comparable<Symbols> {
 	public String  region;
 	public String  currency;
 	public boolean isEnabled;
-	
+	public String  figi;
+	public String  cik;
+
 	public Symbols() {
 		symbol    = null;
 		exchange  = null;
@@ -36,6 +38,8 @@ public class Symbols extends Base implements Comparable<Symbols> {
 		region    = null;
 		currency  = null;
 		isEnabled = false;
+		figi      = null;
+		cik       = null;
 	}
 	
 	public Symbols(JsonObject jsonObject) {
