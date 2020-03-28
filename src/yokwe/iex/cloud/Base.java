@@ -683,10 +683,6 @@ public class Base {
 			logger.error("csvString == null");
 			throw new UnexpectedException("csvString == null");
 		}
-		// If csvString didn't ends with cr lf, append cr lf for CSVutil
-		if (!csvString.endsWith("\r\n")) {
-			csvString = csvString + "\r\n";
-		}
 		Reader reader = new StringReader(csvString);
 
 		List<E> list = CSVUtil.read(clazz).file(reader);
